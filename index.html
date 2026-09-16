@@ -308,6 +308,37 @@ header.top{
 }
 .eco-link:hover{border-color:var(--accent);color:var(--accent)}
 
+/* group challenge */
+.group-panel[hidden]{display:none !important}
+.group-hint{color:var(--muted);font-size:.85rem;margin:-4px 0 12px}
+.group-list{list-style:none;display:grid;gap:8px}
+.group-list li{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;background:rgba(255,255,255,.03);border-radius:12px;
+  border:1px solid transparent;font-size:.88rem
+}
+html[data-theme="light"] .group-list li{background:rgba(251,191,36,.08)}
+.group-list li.me{border-color:rgba(52,211,153,.4)}
+.group-list .g-rank{
+  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1c1230;font-weight:800;font-size:.78rem;flex-shrink:0
+}
+.group-list .g-left{display:flex;align-items:center;gap:10px;min-width:0}
+.group-list .g-em{font-size:1.15rem}
+.group-list .g-nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.group-list .g-meta{font-size:.72rem;color:var(--muted)}
+.group-list .g-pct{font-weight:800;color:var(--accent3);flex-shrink:0}
+.group-save-row{display:flex;gap:8px;margin-top:10px}
+.group-save-row input{
+  flex:1;min-width:0;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--ink);font-family:var(--font);
+  padding:10px 12px;font-size:.9rem;min-height:44px
+}
+.group-save-row button{
+  border:0;border-radius:12px;background:var(--accent);color:#0b0714;
+  font-family:var(--font);font-weight:700;padding:0 14px;min-height:44px;cursor:pointer
+}
+
 .history-panel[hidden]{display:none !important}
 .history-list{list-style:none;display:grid;gap:8px}
 .history-list li{
@@ -498,6 +529,14 @@ footer a:hover{text-decoration:underline}
       <button class="btn btn-ghost" id="btnLastResult" type="button" hidden>آخرین نتیجهٔ من</button>
       <button class="btn btn-ghost" id="btnStacks" type="button">🧭 مسیرهای یادگیری</button>
     </div>
+    <div class="panel group-panel" id="groupPanel">
+      <h3><span class="dot" style="background:var(--accent3)"></span><span id="groupTitle">چالش گروهی</span></h3>
+      <p class="group-hint" id="groupHint">نتیجهٔ دوستانت را ثبت کن و ببین کی جلوتر است.</p>
+      <ul class="group-list" id="groupList"></ul>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnGroupClear" type="button" style="margin-top:8px">پاک کردن جدول</button>
+      </div>
+    </div>
     <div class="panel history-panel" id="historyPanel" hidden>
       <h3><span class="dot" style="background:var(--accent2)"></span><span id="historyTitle">تاریخچهٔ نتایج</span></h3>
       <ul class="history-list" id="historyList"></ul>
@@ -622,6 +661,9 @@ footer a:hover{text-decoration:underline}
       <button class="btn btn-ghost" id="btnResultLink" type="button">🔗 لینک نتیجه</button>
     </div>
     <div class="btn-row">
+      <button class="btn btn-ghost" id="btnGroupSave" type="button">🏆 ثبت در چالش گروهی</button>
+    </div>
+    <div class="btn-row">
       <button class="btn btn-ghost" id="btnRetry" type="button">🔄 دوباره از اول</button>
       <pre class="share-preview" id="sharePreview" aria-hidden="true"></pre>
     </div>
@@ -653,6 +695,7 @@ const STORE_KEY = "devcompass.v1";
 const HIST_KEY = "devcompass.hist.v1";
 const THEME_KEY = "devcompass.theme";
 const PROG_KEY = "devcompass.prog.v1";
+const GROUP_KEY = "devcompass.group.v1";
 
 /* ---------- i18n ---------- */
 const I18N = {
@@ -695,6 +738,15 @@ const I18N = {
     stacksBack:"← همهٔ مسیرها",
     stacksStart:"شروع کوییز ←",
     ecoLabel:"ابزارهای دیگر من",
+    groupTitle:"چالش گروهی",
+    groupHint:"نتیجهٔ دوستانت را ثبت کن و ببین کی جلوتر است.",
+    groupSave:"🏆 ثبت در چالش گروهی",
+    groupClear:"پاک کردن جدول",
+    groupSaved:"به جدول گروه اضافه شد!",
+    groupNamePh:"اسم تو…",
+    groupAdd:"ثبت",
+    groupEmpty:"هنوز کسی ثبت نکرده — اولین نفر باش!",
+    groupMe:"تو",
     shareTag:"تو هم بزن: DevCompass ↗",
     quizTitle:"کوییز مسیر یادگیری",
   },
@@ -737,6 +789,15 @@ const I18N = {
     stacksBack:"← All paths",
     stacksStart:"Start the quiz →",
     ecoLabel:"More tools by me",
+    groupTitle:"Group challenge",
+    groupHint:"Log friends' results and see who is ahead.",
+    groupSave:"🏆 Save to group board",
+    groupClear:"Clear board",
+    groupSaved:"Added to the group board!",
+    groupNamePh:"Your name…",
+    groupAdd:"Add",
+    groupEmpty:"No entries yet — be the first!",
+    groupMe:"You",
     shareTag:"Try it: DevCompass ↗",
     quizTitle:"Learning path quiz",
   }
@@ -1160,6 +1221,10 @@ function setLang(l){
   $("btnStackBack").textContent = t.stacksBack;
   $("btnStackQuiz").textContent = t.stacksStart;
   $("ecoLabel").textContent = t.ecoLabel;
+  $("groupTitle").textContent = t.groupTitle;
+  $("groupHint").textContent = t.groupHint;
+  $("btnGroupSave").textContent = t.groupSave;
+  $("btnGroupClear").textContent = t.groupClear;
   document.querySelectorAll(".goal-pill").forEach(btn=>{
     const g = btn.dataset.goal;
     if(t.goals && t.goals[g]) btn.textContent = t.goals[g];
@@ -1174,6 +1239,7 @@ function setLang(l){
   // challenge banner language
   updateChallengeBanner();
   renderHistory();
+  try{ renderGroup(); }catch(e){}
   if($("screen-stacks").classList.contains("on")) renderStackGrid();
 }
 
@@ -1220,6 +1286,88 @@ function openStack(key){
 function closeStackDetail(){
   $("stackDetail").hidden = true;
   window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- group challenge ---------- */
+function loadGroup(){
+  try{
+    const raw = localStorage.getItem(GROUP_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+
+function saveGroup(list){
+  try{ localStorage.setItem(GROUP_KEY, JSON.stringify(list.slice(0,20))); }catch(e){}
+}
+
+function addGroupEntry(name, top, scores){
+  const entry = {
+    name: (name||"").trim().slice(0,24) || (lang==="fa"?"بدون اسم":"Anonymous"),
+    k: top.k,
+    pct: top.pct,
+    at: Date.now(),
+    me: true
+  };
+  let list = loadGroup().map(x=>({...x, me:false}));
+  list.push(entry);
+  list.sort((a,b)=>b.pct-a.pct || a.at-b.at);
+  saveGroup(list);
+  renderGroup();
+  return entry;
+}
+
+function renderGroup(){
+  const list = loadGroup();
+  const panel = $("groupPanel");
+  const ul = $("groupList");
+  if(!list.length){
+    panel.hidden = false;
+    ul.innerHTML = `<li><span class="g-meta">${I18N[lang].groupEmpty}</span></li>`;
+    return;
+  }
+  panel.hidden = false;
+  ul.innerHTML = "";
+  list.forEach((row,i)=>{
+    const st = STACKS[row.k];
+    if(!st) return;
+    const li = document.createElement("li");
+    if(row.me) li.className = "me";
+    const name = row.name || (lang==="fa"?"بدون اسم":"Anonymous");
+    li.innerHTML = `
+      <div class="g-left">
+        <span class="g-rank">${lang==="fa"?faNum(i+1):i+1}</span>
+        <span class="g-em">${st.emoji}</span>
+        <div>
+          <div class="g-nm">${name}</div>
+          <div class="g-meta">${st.name[lang]}</div>
+        </div>
+      </div>
+      <span class="g-pct">${lang==="fa"?faNum(row.pct)+"٪":row.pct+"%"}</span>`;
+    ul.appendChild(li);
+  });
+}
+
+function promptGroupName(defaultName, onOk){
+  const t = I18N[lang];
+  const panel = $("groupPanel");
+  panel.hidden = false;
+  const existing = panel.querySelector(".group-save-row");
+  if(existing) existing.remove();
+  const row = document.createElement("div");
+  row.className = "group-save-row";
+  row.innerHTML = `<input id="groupNameInput" maxlength="24" placeholder="${t.groupNamePh}" value="${defaultName||""}"><button type="button" id="groupNameGo">${t.groupAdd}</button>`;
+  panel.appendChild(row);
+  const input = row.querySelector("input");
+  const go = row.querySelector("button");
+  const commit = ()=>{
+    const name = input.value;
+    row.remove();
+    onOk(name);
+  };
+  go.addEventListener("click", commit);
+  input.addEventListener("keydown", (e)=>{ if(e.key==="Enter") commit(); });
+  input.focus();
 }
 
 function getFriendStack(){
@@ -1739,6 +1887,19 @@ $("btnResultLink").addEventListener("click", ()=>{
   const url = $("btnResultLink").dataset.url || shareUrl();
   copyText(url, I18N[lang].resultLinkCopied);
 });
+$("btnGroupSave").addEventListener("click", ()=>{
+  if(!lastResult) return;
+  const list = toPct(ranked(lastResult.scores));
+  const top = list[0];
+  promptGroupName("", (name)=>{
+    addGroupEntry(name, top, lastResult.scores);
+    toast(I18N[lang].groupSaved);
+  });
+});
+$("btnGroupClear").addEventListener("click", ()=>{
+  saveGroup([]);
+  renderGroup();
+});
 $("btnFA").addEventListener("click", ()=>setLang("fa"));
 $("btnEN").addEventListener("click", ()=>setLang("en"));
 $("goalPills").addEventListener("click", (e)=>{
@@ -1811,6 +1972,7 @@ function init(){
   }catch(e){}
 
   renderHistory();
+  try{ renderGroup(); }catch(e){}
 
   // deep result link ?view=result&a=...
   const viewParam = params.get("view");
