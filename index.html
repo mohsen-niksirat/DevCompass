@@ -296,6 +296,18 @@ header.top{
 .stack-detail[hidden]{display:none !important}
 .sd-line{font-family:var(--mono);font-size:.8rem;color:var(--accent2);direction:ltr;text-align:start;margin:-4px 0 10px}
 .sd-sub{color:var(--muted);font-size:.92rem;line-height:1.65;margin-bottom:12px}
+
+/* ecosystem links */
+.eco-box{margin-top:28px;text-align:center}
+.eco-label{font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:10px}
+.eco-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.eco-link{
+  font-size:.78rem;font-weight:600;color:var(--ink);text-decoration:none;
+  background:var(--card);border:1px solid var(--border);border-radius:999px;
+  padding:8px 12px;touch-action:manipulation
+}
+.eco-link:hover{border-color:var(--accent);color:var(--accent)}
+
 .history-panel[hidden]{display:none !important}
 .history-list{list-style:none;display:grid;gap:8px}
 .history-list li{
@@ -406,6 +418,7 @@ footer{
 }
 footer a{color:var(--accent);text-decoration:none;font-weight:600}
 footer a:hover{text-decoration:underline}
+.foot-links{margin-top:8px;font-size:.72rem;opacity:.9}
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 </style>
@@ -488,6 +501,15 @@ footer a:hover{text-decoration:underline}
     <div class="panel history-panel" id="historyPanel" hidden>
       <h3><span class="dot" style="background:var(--accent2)"></span><span id="historyTitle">تاریخچهٔ نتایج</span></h3>
       <ul class="history-list" id="historyList"></ul>
+    </div>
+    <div class="eco-box" id="ecoBox">
+      <div class="eco-label" id="ecoLabel">ابزارهای دیگر من</div>
+      <div class="eco-links">
+        <a class="eco-link" href="https://mohsen-niksirat.github.io/github-wrapped/" target="_blank" rel="noopener">📦 GitHub Wrapped</a>
+        <a class="eco-link" href="https://mohsen-niksirat.github.io/promptopia/" target="_blank" rel="noopener">🎨 Promptopia</a>
+        <a class="eco-link" href="https://github.com/mohsen-niksirat/Leitner-Pro-Max" target="_blank" rel="noopener">📚 Readner</a>
+        <a class="eco-link" href="https://github.com/mohsen-niksirat" target="_blank" rel="noopener">👤 همهٔ پروژه‌ها</a>
+      </div>
     </div>
   </section>
 
@@ -607,6 +629,13 @@ footer a:hover{text-decoration:underline}
 
   <footer>
     <p id="footNote">ساختهٔ <a href="https://github.com/mohsen-niksirat" target="_blank" rel="noopener">Mohsen Niksirat</a> · رایگان و متن‌باز</p>
+    <p class="foot-links">
+      <a href="https://github.com/mohsen-niksirat/github-wrapped" target="_blank" rel="noopener">GitHub Wrapped</a>
+      ·
+      <a href="https://github.com/mohsen-niksirat/promptopia" target="_blank" rel="noopener">Promptopia</a>
+      ·
+      <a href="https://github.com/mohsen-niksirat/Leitner-Pro-Max" target="_blank" rel="noopener">Readner</a>
+    </p>
   </footer>
 </div>
 
@@ -665,6 +694,7 @@ const I18N = {
     stacksSub:"هر مسیر را ببین؛ بعد کوییز بده تا بهترین‌اش را پیشنهاد کنیم.",
     stacksBack:"← همهٔ مسیرها",
     stacksStart:"شروع کوییز ←",
+    ecoLabel:"ابزارهای دیگر من",
     shareTag:"تو هم بزن: DevCompass ↗",
     quizTitle:"کوییز مسیر یادگیری",
   },
@@ -706,6 +736,7 @@ const I18N = {
     stacksSub:"Browse each path, then take the quiz to get your best match.",
     stacksBack:"← All paths",
     stacksStart:"Start the quiz →",
+    ecoLabel:"More tools by me",
     shareTag:"Try it: DevCompass ↗",
     quizTitle:"Learning path quiz",
   }
@@ -1128,6 +1159,7 @@ function setLang(l){
   $("stacksSub").textContent = t.stacksSub;
   $("btnStackBack").textContent = t.stacksBack;
   $("btnStackQuiz").textContent = t.stacksStart;
+  $("ecoLabel").textContent = t.ecoLabel;
   document.querySelectorAll(".goal-pill").forEach(btn=>{
     const g = btn.dataset.goal;
     if(t.goals && t.goals[g]) btn.textContent = t.goals[g];
