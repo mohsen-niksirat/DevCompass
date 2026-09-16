@@ -39,6 +39,9 @@ Free quiz: which tech stack should you learn? Get a shareable result card.
 - **تاریخچهٔ ۸ نتیجهٔ آخر** + **تم روشن/تیره**
 - **صفحهٔ مسیرهای یادگیری** (`?s=<stack>` برای لینک مستقیم)
 - **ادامهٔ کوییز** اگر وسط کار بستی
+- **لینک عمیق نتیجه** (`?view=result&a=...`) — بدون کوییز باز می‌شود
+- **چالش گروهی محلی** — رتبه‌بندی نتایج دوست‌ها روی همان دستگاه
+- لینک ابزارهای مرتبط (Wrapped / Promptopia / Readner)
 - ذخیرهٔ آخرین نتیجه در `localStorage`
 - **PWA آفلاین** (manifest + service worker)
 - بهینه برای موبایل (touch targets، safe-area، RTL)
