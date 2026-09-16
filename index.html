@@ -318,6 +318,9 @@ header.top{
   100%{opacity:0;transform:translateY(120px) rotate(220deg)}
 }
 
+/* related tools */
+.related-panel[hidden]{display:none !important}
+
 /* iran tips */
 .iran-panel[hidden]{display:none !important}
 .iran-list{list-style:none;display:grid;gap:8px}
@@ -694,6 +697,11 @@ footer a:hover{text-decoration:underline}
       <ul class="iran-list" id="iranList"></ul>
     </div>
 
+    <div class="panel related-panel" id="relatedPanel" hidden>
+      <h3><span class="dot" style="background:var(--accent2)"></span><span id="relatedTitle">ابزارهای مرتبط با مسیرت</span></h3>
+      <div class="eco-links" id="relatedLinks"></div>
+    </div>
+
     <div class="panel compare-panel" id="comparePanel" hidden>
       <h3><span class="dot" style="background:var(--accent3)"></span><span id="compareTitle">مقایسه با دوست</span></h3>
       <div class="compare-grid">
@@ -840,6 +848,18 @@ const I18N = {
     installCta:"نصب DevCompass روی گوشی",
     installDismiss:"بعداً",
     iranTitle:"نکات بازار ایران",
+    relatedTitle:"ابزارهای مرتبط با مسیرت",
+    related:{
+      frontend:[{label:"🎨 پرامپت‌های UI در Promptopia",url:"https://mohsen-niksirat.github.io/promptopia/"}],
+      backend:[{label:"📦 GitHub Wrapped برای رزومهٔ سال",url:"https://mohsen-niksirat.github.io/github-wrapped/"}],
+      fullstack:[{label:"🎨 Promptopia برای طراحی سریع",url:"https://mohsen-niksirat.github.io/promptopia/"},{label:"📦 GitHub Wrapped",url:"https://mohsen-niksirat.github.io/github-wrapped/"}],
+      mobile:[{label:"📦 GitHub Wrapped",url:"https://mohsen-niksirat.github.io/github-wrapped/"}],
+      gamedev:[{label:"🎨 Promptopia برای ایدهٔ بصری",url:"https://mohsen-niksirat.github.io/promptopia/"}],
+      ai:[{label:"🎨 Promptopia — گالری پرامپت",url:"https://mohsen-niksirat.github.io/promptopia/"},{label:"📚 Readner برای یادگیری سریع",url:"https://github.com/mohsen-niksirat/Leitner-Pro-Max"}],
+      data:[{label:"📦 GitHub Wrapped برای الگوی کاری",url:"https://mohsen-niksirat.github.io/github-wrapped/"},{label:"📚 Readner",url:"https://github.com/mohsen-niksirat/Leitner-Pro-Max"}],
+      devops:[{label:"📦 GitHub Wrapped",url:"https://mohsen-niksirat.github.io/github-wrapped/"}],
+      security:[{label:"📚 Readner برای انگلیسی فنی",url:"https://github.com/mohsen-niksirat/Leitner-Pro-Max"}]
+    },
     iranTips:{
       frontend:["پروژه‌های سازمانی و فروشگاهی زیاد است — پورتفولیوی فارسی+انگلیسی بساز.","فریلنسری در پونیشا و پارسکدرز واقعی است؛ نمونه‌کار محکم بزن.","مهارت Tailwind و Next برای استخدام تیم‌های استارتاپی تهران پرتقاضاست."],
       backend:["بانک، فین‌تک و سیستم‌های پرداخت به Node/Python تقاضای بالا دارند.","یادگیری SQL عمیق + Docker برای موقعیت‌های سازمانی حیاتی است.","Remote با شرکت‌های خارجی برای بک‌اند واقع‌بینانه است اگر English خوب باشد."],
@@ -905,6 +925,18 @@ const I18N = {
     installCta:"Install DevCompass on your phone",
     installDismiss:"Later",
     iranTitle:"Iran market tips",
+    relatedTitle:"Tools related to your path",
+    related:{
+      frontend:[{label:"🎨 UI prompts on Promptopia",url:"https://mohsen-niksirat.github.io/promptopia/"}],
+      backend:[{label:"📦 GitHub Wrapped resume",url:"https://mohsen-niksirat.github.io/github-wrapped/"}],
+      fullstack:[{label:"🎨 Promptopia",url:"https://mohsen-niksirat.github.io/promptopia/"},{label:"📦 GitHub Wrapped",url:"https://mohsen-niksirat.github.io/github-wrapped/"}],
+      mobile:[{label:"📦 GitHub Wrapped",url:"https://mohsen-niksirat.github.io/github-wrapped/"}],
+      gamedev:[{label:"🎨 Promptopia for visual ideas",url:"https://mohsen-niksirat.github.io/promptopia/"}],
+      ai:[{label:"🎨 Promptopia prompt gallery",url:"https://mohsen-niksirat.github.io/promptopia/"},{label:"📚 Readner for fast learning",url:"https://github.com/mohsen-niksirat/Leitner-Pro-Max"}],
+      data:[{label:"📦 GitHub Wrapped",url:"https://mohsen-niksirat.github.io/github-wrapped/"},{label:"📚 Readner",url:"https://github.com/mohsen-niksirat/Leitner-Pro-Max"}],
+      devops:[{label:"📦 GitHub Wrapped",url:"https://mohsen-niksirat.github.io/github-wrapped/"}],
+      security:[{label:"📚 Readner for technical English",url:"https://github.com/mohsen-niksirat/Leitner-Pro-Max"}]
+    },
     iranTips:{
       frontend:["Lots of org & shop projects — ship a bilingual portfolio.","Freelance on Ponisha-style boards is real; lead with samples.","Tailwind + Next.js is highly requested by Tehran startups."],
       backend:["Banks, fintech and payments hire Node/Python heavily.","Deep SQL + Docker matters for enterprise roles.","Remote work abroad is realistic with strong English."],
@@ -1391,6 +1423,7 @@ function setLang(l){
   $("btnGroupSave").textContent = t.groupSave;
   $("btnGroupClear").textContent = t.groupClear;
   $("iranTitle").textContent = t.iranTitle;
+  $("relatedTitle").textContent = t.relatedTitle;
   document.querySelectorAll(".goal-pill").forEach(btn=>{
     const g = btn.dataset.goal;
     if(t.goals && t.goals[g]) btn.textContent = t.goals[g];
@@ -1714,6 +1747,28 @@ function renderResult(res){
       iran.hidden = true;
     }
   }catch(e){ $("iranPanel").hidden = true; }
+
+  // related tools
+  try{
+    const rel = (t.related && t.related[top.k]) || [];
+    const rp = $("relatedPanel");
+    if(rel.length){
+      rp.hidden = false;
+      const box = $("relatedLinks");
+      box.innerHTML = "";
+      rel.forEach(item=>{
+        const a = document.createElement("a");
+        a.className = "eco-link";
+        a.href = item.url;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = item.label;
+        box.appendChild(a);
+      });
+    }else{
+      rp.hidden = true;
+    }
+  }catch(e){ $("relatedPanel").hidden = true; }
 
   const chips = $("resChips");
   chips.innerHTML = "";
