@@ -145,6 +145,18 @@ header.top{
   background:linear-gradient(90deg,#34d399,#6ee7b7);
   display:inline-block;padding:6px 14px;border-radius:999px
 }
+.goal-box{margin-top:18px;text-align:center}
+.goal-label{font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:10px}
+.goal-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.goal-pill{
+  border:1px solid var(--border);background:var(--card);color:var(--ink);
+  font-family:var(--font);font-size:.78rem;font-weight:600;padding:8px 12px;
+  border-radius:999px;cursor:pointer;min-height:36px;touch-action:manipulation
+}
+.goal-pill:hover{border-color:var(--accent)}
+.goal-pill.active{
+  background:rgba(167,139,250,.16);border-color:var(--accent);color:var(--accent)
+}
 
 /* progress */
 .progress-wrap{margin:8px 0 24px}
@@ -378,7 +390,7 @@ footer a:hover{text-decoration:underline}
     <div class="hero">
       <div class="emoji" aria-hidden="true">🧭</div>
       <h1 id="heroTitle">چه استکی یاد بگیرم؟</h1>
-      <p id="heroSub">۱۰ سؤال کوتاه. ۲ دقیقه. یک مسیر روشن برای شروع برنامه‌نویسی — با کارت نتیجهٔ قابل اشتراک.</p>
+      <p id="heroSub">۱۲ سؤال کوتاه. ۲ دقیقه. یک مسیر روشن برای شروع برنامه‌نویسی — با کارت نتیجهٔ قابل اشتراک.</p>
       <div class="pills">
         <span class="pill">⏱ <b id="pillTime">~۲ دقیقه</b></span>
         <span class="pill">🆓 <b id="pillFree">رایگان</b></span>
@@ -388,6 +400,16 @@ footer a:hover{text-decoration:underline}
     <div class="challenge-banner" id="challengeBanner">
       <span id="challengeText"></span>
       <div class="challenge-cta" id="challengeCta">همین حالا شروع کن</div>
+    </div>
+    <div class="goal-box">
+      <div class="goal-label" id="goalLabel">هدف تو چیست؟ (اختیاری)</div>
+      <div class="goal-pills" role="radiogroup" id="goalPills">
+        <button type="button" class="goal-pill active" data-goal="any">نامشخص</button>
+        <button type="button" class="goal-pill" data-goal="job"> استخدام / شغل </button>
+        <button type="button" class="goal-pill" data-goal="freelance">فریلنسری</button>
+        <button type="button" class="goal-pill" data-goal="fun">سرگرمی / پروژه شخصی</button>
+        <button type="button" class="goal-pill" data-goal="study">یادگیری / دانشگاه</button>
+      </div>
     </div>
     <button class="btn btn-primary" id="btnStart" type="button">شروع کوییز ←</button>
     <div class="btn-row">
@@ -512,7 +534,7 @@ const I18N = {
     dir:"rtl", lang:"fa",
     brandTitle:"دِو‌کمپس", brandSub:"DevCompass",
     heroTitle:"چه استکی یاد بگیرم؟",
-    heroSub:"۱۰ سؤال کوتاه. ۲ دقیقه. یک مسیر روشن برای شروع برنامه‌نویسی — با کارت نتیجهٔ قابل اشتراک.",
+    heroSub:"۱۲ سؤال کوتاه. ۲ دقیقه. یک مسیر روشن برای شروع برنامه‌نویسی — با کارت نتیجهٔ قابل اشتراک.",
     pillTime:"~۲ دقیقه", pillFree:"رایگان", pillShare:"قابل اشتراک",
     start:"شروع کوییز ←", last:"آخرین نتیجهٔ من",
     counter:(i,n)=>`سؤال ${faNum(i)} از ${faNum(n)}`,
@@ -536,6 +558,8 @@ const I18N = {
     verdictMatch:(a,b)=>`🎉 دقیقاً هم‌مسیر شدید! هر دو <strong>${a}</strong>`,
     verdictDiff:(a,b)=>`⚡ مسیرهای متفاوت — تو <strong>${a}</strong> و دوستت <strong>${b}</strong>. کارت را بفرست و ببین کی بیشتر جذب می‌شود!`,
     shareCompare:"🧩 نتیجهٔ من با چالش دوستم:",
+    goalLabel:"هدف تو چیست؟ (اختیاری)",
+    goals:{any:"نامشخص",job:" استخدام / شغل ",freelance:"فریلنسری",fun:"سرگرمی / پروژه شخصی",study:"یادگیری / دانشگاه"},
     shareTag:"تو هم بزن: DevCompass ↗",
     quizTitle:"کوییز مسیر یادگیری",
   },
@@ -543,7 +567,7 @@ const I18N = {
     dir:"ltr", lang:"en",
     brandTitle:"DevCompass", brandSub:"Find your stack",
     heroTitle:"Which tech stack should you learn?",
-    heroSub:"10 short questions. 2 minutes. One clear path to start coding — with a shareable result card.",
+    heroSub:"12 short questions. 2 minutes. One clear path to start coding — with a shareable result card.",
     pillTime:"~2 min", pillFree:"Free", pillShare:"Shareable",
     start:"Start the quiz →", last:"My last result",
     counter:(i,n)=>`Question ${i} of ${n}`,
@@ -567,6 +591,8 @@ const I18N = {
     verdictMatch:(a,b)=>`🎉 Same path! You both got <strong>${a}</strong>`,
     verdictDiff:(a,b)=>`⚡ Different paths — you <strong>${a}</strong>, friend <strong>${b}</strong>. Send your card and see who wins!`,
     shareCompare:"🧩 My result after a friend challenge:",
+    goalLabel:"What's your goal? (optional)",
+    goals:{any:"Not sure",job:"Job / career",freelance:"Freelance",fun:"Fun / side project",study:"Learning / school"},
     shareTag:"Try it: DevCompass ↗",
     quizTitle:"Learning path quiz",
   }
@@ -797,6 +823,24 @@ const QUESTIONS = [
       {ico:"📲", t:{fa:"اپی که روی گوشی دوستت نصب می‌شود", en:"An app landing on your friend's phone"}, w:{mobile:3}},
       {ico:"🧬", t:{fa:"مدلی که بعد از آموزش درست حدس می‌زند", en:"A model that predicts correctly after training"}, w:{ai:3,data:1}}
     ]
+  },
+  {
+    q:{fa:"اگر یک فیشینگ یا باگ امنیتی ببینی، چه حسی داری؟", en:"If you spotted a phishing page or security bug, how would you feel?"},
+    opts:[
+      {ico:"🕵️", t:{fa:"کنجکاو می‌شوم — می‌خواهم تحلیلش کنم", en:"Curious — I want to reverse-engineer it"}, w:{security:3}},
+      {ico:"🛡️", t:{fa:"دوست دارم سریع گزارش و رفعش کنم", en:"I'd want to patch and report it fast"}, w:{security:2,devops:2}},
+      {ico:"🧱", t:{fa:"بیشتر به معماری سالم سیستم فکر می‌کنم", en:"I think about healthy system architecture"}, w:{backend:2,devops:2,fullstack:1}},
+      {ico:"🚫", t:{fa:"اصلاً جذبم نمی‌کند", en:"Not interesting to me"}, w:{frontend:1,gamedev:1,fullstack:1}}
+    ]
+  },
+  {
+    q:{fa:"کدام نوع «بینش» از داده بیشتر می‌چسبد؟", en:"Which kind of data insight feels most satisfying?"},
+    opts:[
+      {ico:"📉", t:{fa:"کمپین مارکتینگ چرا تبدیل کم داشت", en:"Why a marketing campaign converted poorly"}, w:{data:3,ai:1}},
+      {ico:"🔮", t:{fa:"پیش‌بینی رفتار کاربر در هفتهٔ بعد", en:"Predicting next week's user behavior"}, w:{ai:3,data:2}},
+      {ico:"🩺", t:{fa:"کدام API کند است و چرا کرش می‌کند", en:"Which API is slow and why it crashes"}, w:{backend:2,devops:2,security:1}},
+      {ico:"🎮", t:{fa:"چرا بازیکن‌ها در مرحلهٔ ۳ رها می‌کنند", en:"Why players quit at level 3"}, w:{gamedev:3,data:1}}
+    ]
   }
 ];
 
@@ -805,6 +849,15 @@ let lang = "fa";
 let qi = 0;
 let answers = []; // option index per question
 let lastResult = null;
+let goal = "any";
+
+const GOAL_BONUS = {
+  any: {},
+  job: { backend:1, frontend:1, security:1, data:1, ai:1, devops:1 },
+  freelance: { fullstack:2, frontend:1, mobile:1, gamedev:1 },
+  fun: { gamedev:2, frontend:1, mobile:1, fullstack:1 },
+  study: { ai:1, data:1, backend:1, frontend:1 }
+};
 
 const $ = (id)=>document.getElementById(id);
 
@@ -817,6 +870,8 @@ function score(answersArr){
     const w = QUESTIONS[qi2].opts[oi].w;
     Object.keys(w).forEach(k=>{ s[k]=(s[k]||0)+w[k]; });
   });
+  const bonus = GOAL_BONUS[goal] || {};
+  Object.keys(bonus).forEach(k=>{ s[k]=(s[k]||0)+bonus[k]; });
   return s;
 }
 
@@ -910,6 +965,11 @@ function setLang(l){
   $("btnRetry").textContent = t.retry;
   $("btnDownload").textContent = t.download;
   $("btnShare").textContent = t.share;
+  $("goalLabel").textContent = t.goalLabel;
+  document.querySelectorAll(".goal-pill").forEach(btn=>{
+    const g = btn.dataset.goal;
+    if(t.goals && t.goals[g]) btn.textContent = t.goals[g];
+  });
   $("footNote").innerHTML = t.foot;
   document.title = l==="fa"
     ? "دِو‌کمپس · DevCompass — چه استکی یاد بگیرم؟"
@@ -1369,6 +1429,12 @@ $("btnDownload").addEventListener("click", ()=>{ downloadCard(); });
 $("btnShare").addEventListener("click", ()=>{ nativeShareResult(); });
 $("btnFA").addEventListener("click", ()=>setLang("fa"));
 $("btnEN").addEventListener("click", ()=>setLang("en"));
+$("goalPills").addEventListener("click", (e)=>{
+  const btn = e.target.closest(".goal-pill");
+  if(!btn) return;
+  goal = btn.dataset.goal || "any";
+  document.querySelectorAll(".goal-pill").forEach(b=>b.classList.toggle("active", b===btn));
+});
 $("btnLastResult").addEventListener("click", ()=>{
   if(lastResult){ renderResult(lastResult); show("result"); }
 });
