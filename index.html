@@ -42,6 +42,30 @@
   --font:"Vazirmatn",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:ui-monospace,"Cascadia Code","SF Mono",Menlo,monospace;
 }
+html[data-theme="light"]{
+  --bg:#f6f2ff;
+  --bg2:#efe8ff;
+  --card:rgba(255,255,255,.72);
+  --card-hover:rgba(255,255,255,.95);
+  --border:rgba(80,50,140,.14);
+  --ink:#1c1230;
+  --muted:#5d5478;
+  --accent:#7c3aed;
+  --accent2:#059669;
+  --accent3:#d97706;
+  --danger:#db2777;
+  --ring:rgba(124,58,237,.35);
+}
+html[data-theme="light"] .aurora .blob{opacity:.22}
+html[data-theme="light"] .btn-primary{
+  box-shadow:0 8px 24px rgba(124,58,237,.28)
+}
+html[data-theme="light"] .share-card{
+  background:linear-gradient(145deg,#ede9fe 0%,#e0f2fe 50%,#d1fae5 100%)
+}
+html[data-theme="light"] .toast{
+  background:#fff;color:#1c1230
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -79,6 +103,13 @@ header.top{
   background:linear-gradient(135deg,#7c3aed,#2563eb);
   font-size:20px;box-shadow:0 4px 20px rgba(124,58,237,.4)
 }
+.header-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.theme-btn{
+  width:40px;height:40px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);cursor:pointer;font-size:1rem;display:grid;place-items:center;
+  touch-action:manipulation
+}
+.theme-btn:hover{background:var(--card-hover)}
 .lang-toggle{
   display:flex;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px;flex:0 0 auto
 }
@@ -246,6 +277,22 @@ header.top{
 .compare-verdict.match{color:var(--accent2)}
 .compare-verdict.diff{color:var(--accent3)}
 
+/* history */
+.history-panel[hidden]{display:none !important}
+.history-list{list-style:none;display:grid;gap:8px}
+.history-list li{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;background:rgba(255,255,255,.03);border-radius:12px;
+  border:1px solid transparent;font-size:.88rem
+}
+html[data-theme="light"] .history-list li{background:rgba(124,58,237,.06)}
+.history-list li:hover{border-color:var(--border)}
+.history-list .h-left{display:flex;align-items:center;gap:10px;min-width:0}
+.history-list .h-em{font-size:1.2rem}
+.history-list .h-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-list .h-meta{font-size:.72rem;color:var(--muted)}
+.history-list .h-pct{font-weight:800;color:var(--accent);flex-shrink:0}
+
 .panel{
   background:var(--card);border:1px solid var(--border);border-radius:18px;
   padding:20px;margin-top:20px
@@ -379,9 +426,13 @@ footer a:hover{text-decoration:underline}
         <span class="sub" id="brandSub">DevCompass</span>
       </span>
     </a>
-    <div class="lang-toggle" role="group" aria-label="Language">
-      <button type="button" id="btnFA" class="active" lang="fa">فا</button>
-      <button type="button" id="btnEN" lang="en">EN</button>
+    <div class="header-actions">
+      <button type="button" id="btnTheme" class="theme-btn" title="Theme" aria-label="Toggle theme"
+        onclick="(function(){var c=document.documentElement.getAttribute('data-theme');var n=c==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('devcompass.theme',n)}catch(e){};var b=document.getElementById('btnTheme');if(b)b.textContent=n==='light'?'☀️':'🌙'})()">🌙</button>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" id="btnFA" class="active" lang="fa">فا</button>
+        <button type="button" id="btnEN" lang="en">EN</button>
+      </div>
     </div>
   </header>
 
@@ -414,6 +465,10 @@ footer a:hover{text-decoration:underline}
     <button class="btn btn-primary" id="btnStart" type="button">شروع کوییز ←</button>
     <div class="btn-row">
       <button class="btn btn-ghost" id="btnLastResult" type="button" hidden>آخرین نتیجهٔ من</button>
+    </div>
+    <div class="panel history-panel" id="historyPanel" hidden>
+      <h3><span class="dot" style="background:var(--accent2)"></span><span id="historyTitle">تاریخچهٔ نتایج</span></h3>
+      <ul class="history-list" id="historyList"></ul>
     </div>
   </section>
 
@@ -527,6 +582,8 @@ footer a:hover{text-decoration:underline}
 
 const SITE = "https://mohsen-niksirat.github.io/DevCompass/";
 const STORE_KEY = "devcompass.v1";
+const HIST_KEY = "devcompass.hist.v1";
+const THEME_KEY = "devcompass.theme";
 
 /* ---------- i18n ---------- */
 const I18N = {
@@ -560,6 +617,7 @@ const I18N = {
     shareCompare:"🧩 نتیجهٔ من با چالش دوستم:",
     goalLabel:"هدف تو چیست؟ (اختیاری)",
     goals:{any:"نامشخص",job:" استخدام / شغل ",freelance:"فریلنسری",fun:"سرگرمی / پروژه شخصی",study:"یادگیری / دانشگاه"},
+    historyTitle:"تاریخچهٔ نتایج",
     shareTag:"تو هم بزن: DevCompass ↗",
     quizTitle:"کوییز مسیر یادگیری",
   },
@@ -593,6 +651,7 @@ const I18N = {
     shareCompare:"🧩 My result after a friend challenge:",
     goalLabel:"What's your goal? (optional)",
     goals:{any:"Not sure",job:"Job / career",freelance:"Freelance",fun:"Fun / side project",study:"Learning / school"},
+    historyTitle:"Result history",
     shareTag:"Try it: DevCompass ↗",
     quizTitle:"Learning path quiz",
   }
@@ -966,6 +1025,7 @@ function setLang(l){
   $("btnDownload").textContent = t.download;
   $("btnShare").textContent = t.share;
   $("goalLabel").textContent = t.goalLabel;
+  $("historyTitle").textContent = t.historyTitle;
   document.querySelectorAll(".goal-pill").forEach(btn=>{
     const g = btn.dataset.goal;
     if(t.goals && t.goals[g]) btn.textContent = t.goals[g];
@@ -979,6 +1039,7 @@ function setLang(l){
   if($("screen-result").classList.contains("on") && lastResult) renderResult(lastResult);
   // challenge banner language
   updateChallengeBanner();
+  renderHistory();
 }
 
 function show(name){
@@ -1061,8 +1122,70 @@ function finish(){
   const scores = score(answers);
   lastResult = {scores, at: Date.now()};
   try{ localStorage.setItem(STORE_KEY, JSON.stringify(lastResult)); }catch(e){}
+  pushHistory(lastResult);
+  try{ renderHistory(); }catch(e){}
   renderResult(lastResult);
   show("result");
+}
+
+function loadHistory(){
+  try{
+    const raw = localStorage.getItem(HIST_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+
+function pushHistory(res){
+  const list = toPct(ranked(res.scores));
+  const top = list[0];
+  if(!top) return;
+  const entry = {
+    k: top.k,
+    pct: top.pct,
+    at: res.at || Date.now(),
+    scores: res.scores
+  };
+  let hist = loadHistory();
+  hist.unshift(entry);
+  hist = hist.slice(0, 8);
+  try{ localStorage.setItem(HIST_KEY, JSON.stringify(hist)); }catch(e){}
+}
+
+function renderHistory(){
+  const hist = loadHistory();
+  const panel = $("historyPanel");
+  const listEl = $("historyList");
+  if(!hist.length){ panel.hidden = true; return; }
+  panel.hidden = false;
+  listEl.innerHTML = "";
+  hist.forEach((h,i)=>{
+    const st = STACKS[h.k];
+    if(!st) return;
+    const li = document.createElement("li");
+    const d = new Date(h.at);
+    const date = lang==="fa"
+      ? `${faNum(d.getDate())}/${faNum(d.getMonth()+1)}`
+      : `${d.getDate()}/${d.getMonth()+1}`;
+    li.innerHTML = `
+      <div class="h-left">
+        <span class="h-em">${st.emoji}</span>
+        <div>
+          <div class="h-name">${st.name[lang]}</div>
+          <div class="h-meta">${date}</div>
+        </div>
+      </div>
+      <span class="h-pct">${lang==="fa"?faNum(h.pct)+"٪":h.pct+"%"}</span>`;
+    listEl.appendChild(li);
+  });
+}
+
+function applyTheme(theme){
+  const t = theme === "light" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", t);
+  const btn = document.getElementById("btnTheme");
+  if(btn) btn.textContent = t === "light" ? "☀️" : "🌙";
+  try{ localStorage.setItem(THEME_KEY, t); }catch(e){}
 }
 
 function renderResult(res){
@@ -1460,7 +1583,14 @@ function init(){
   // default FA for this audience unless clearly non-fa
   // Actually: default fa (target), allow ?lang=en
   if(!qLang) lang = "fa";
-  setLang(lang);
+
+  try{
+    applyTheme(localStorage.getItem(THEME_KEY) || "dark");
+  }catch(e){
+    try{ document.documentElement.setAttribute("data-theme","dark"); }catch(_){}
+  }
+
+  try{ setLang(lang); }catch(e){}
 
   try{
     const raw = localStorage.getItem(STORE_KEY);
@@ -1471,6 +1601,8 @@ function init(){
       }
     }
   }catch(e){}
+
+  renderHistory();
 
   updateChallengeBanner();
 
