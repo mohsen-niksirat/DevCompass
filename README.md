@@ -41,6 +41,9 @@ Free quiz: which tech stack should you learn? Get a shareable result card.
 - **ادامهٔ کوییز** اگر وسط کار بستی
 - **لینک عمیق نتیجه** (`?view=result&a=...`) — بدون کوییز باز می‌شود
 - **چالش گروهی محلی** — رتبه‌بندی نتایج دوست‌ها روی همان دستگاه
+- **انیمیشن نتیجه** + شمارندهٔ درصد + confetti (با احترام به reduced-motion)
+- **شمارش محلی رویدادها** (بدون سرور و بدون analytics شخص‌ثالث)
+- **بنر نصب PWA** وقتی مرورگر اجازه دهد
 - لینک ابزارهای مرتبط (Wrapped / Promptopia / Readner)
 - ذخیرهٔ آخرین نتیجه در `localStorage`
 - **PWA آفلاین** (manifest + service worker)

@@ -182,8 +182,10 @@ header.top{
 .goal-pill{
   border:1px solid var(--border);background:var(--card);color:var(--ink);
   font-family:var(--font);font-size:.78rem;font-weight:600;padding:8px 12px;
-  border-radius:999px;cursor:pointer;min-height:36px;touch-action:manipulation
+  border-radius:999px;cursor:pointer;min-height:36px;touch-action:manipulation;
+  transition:transform .15s ease, border-color .15s, background .15s
 }
+.goal-pill:active{transform:scale(.96)}
 .goal-pill:hover{border-color:var(--accent)}
 .goal-pill.active{
   background:rgba(167,139,250,.16);border-color:var(--accent);color:var(--accent)
@@ -217,8 +219,29 @@ header.top{
   border-radius:14px;padding:14px 16px;color:var(--ink);cursor:pointer;
   font-family:var(--font);font-size:.95rem;line-height:1.55;min-height:56px;
   transition:border-color .15s,background .15s,transform .12s;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  animation:optIn .28s ease both
 }
+.opt:nth-child(1){animation-delay:.02s}
+.opt:nth-child(2){animation-delay:.06s}
+.opt:nth-child(3){animation-delay:.1s}
+.opt:nth-child(4){animation-delay:.14s}
+@keyframes optIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.install-banner{
+  margin-top:18px;padding:12px 14px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(167,139,250,.14),rgba(52,211,153,.1));
+  border:1px solid rgba(167,139,250,.28);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  font-size:.88rem;font-weight:600;animation:fadeUp .4s ease both
+}
+.install-banner[hidden]{display:none !important}
+.install-actions{display:flex;gap:8px}
+.install-yes,.install-no{
+  border:0;border-radius:999px;font-family:var(--font);font-weight:700;
+  min-height:36px;padding:6px 14px;cursor:pointer;touch-action:manipulation
+}
+.install-yes{background:var(--accent);color:#0b0714}
+.install-no{background:transparent;color:var(--muted);border:1px solid var(--border)}
 .opt:hover{background:var(--card-hover);border-color:var(--accent)}
 .opt.selected{border-color:var(--accent);background:rgba(167,139,250,.12)}
 .opt .ico{font-size:1.25rem;line-height:1.4;flex-shrink:0}
@@ -238,19 +261,62 @@ header.top{
   background:
     radial-gradient(closest-side,var(--bg) 78%,transparent 79% 100%),
     conic-gradient(var(--accent) calc(var(--pct)*1%), rgba(255,255,255,.08) 0);
+  animation:badgePop .55s cubic-bezier(.22,1.2,.36,1) both;
 }
-.badge-ring .inner{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.badge-ring::after{
+  content:"";position:absolute;inset:-8px;border-radius:50%;
+  border:2px solid rgba(167,139,250,.25);
+  animation:ringPulse 2.4s ease-in-out infinite;
+  pointer-events:none;opacity:0;
+}
+.badge-ring.on::after{opacity:1}
+@keyframes badgePop{
+  0%{transform:scale(.72);opacity:0}
+  60%{transform:scale(1.06)}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes ringPulse{
+  0%,100%{transform:scale(1);opacity:.35}
+  50%{transform:scale(1.06);opacity:.7}
+}
+.badge-ring .inner{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeUp .45s .15s ease both}
 .badge-ring .emoji{font-size:clamp(1.8rem,7vw,2.4rem);line-height:1.1}
 .badge-ring .pct{font-size:clamp(1.15rem,4.5vw,1.5rem);font-weight:800;letter-spacing:-.03em;margin-top:2px}
-.result-kicker{font-size:.8rem;color:var(--accent2);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-.result-title{font-size:clamp(1.4rem,4.5vw,1.85rem);font-weight:800;margin:6px 0 4px;letter-spacing:-.02em}
-.result-sub{color:var(--muted);font-size:.95rem;max-width:440px;margin:0 auto}
+.result-kicker{font-size:.8rem;color:var(--accent2);font-weight:700;letter-spacing:.04em;text-transform:uppercase;animation:fadeUp .4s .18s ease both}
+.result-title{font-size:clamp(1.4rem,4.5vw,1.85rem);font-weight:800;margin:6px 0 4px;letter-spacing:-.02em;animation:fadeUp .4s .24s ease both}
+.result-sub{color:var(--muted);font-size:.95rem;max-width:440px;margin:0 auto;animation:fadeUp .4s .3s ease both}
 .stack-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0 8px}
 .chip{
   font-size:.78rem;font-weight:600;padding:6px 12px;border-radius:999px;
-  background:rgba(167,139,250,.12);color:var(--accent);border:1px solid rgba(167,139,250,.25)
+  background:rgba(167,139,250,.12);color:var(--accent);border:1px solid rgba(167,139,250,.25);
+  animation:chipIn .45s ease both
 }
+.chip:nth-child(1){animation-delay:.32s}
+.chip:nth-child(2){animation-delay:.4s}
+.chip:nth-child(3){animation-delay:.48s}
 .chip.alt{background:rgba(52,211,153,.1);color:var(--accent2);border-color:rgba(52,211,153,.25)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes chipIn{from{opacity:0;transform:scale(.9) translateY(6px)}to{opacity:1;transform:none}}
+.screen.on .panel{animation:fadeUp .45s .35s ease both}
+.screen.on .share-card{animation:fadeUp .5s .42s ease both}
+.screen.on .compare-panel{animation:fadeUp .45s .38s ease both}
+.opt.selected{animation:optPop .28s ease}
+@keyframes optPop{
+  0%{transform:scale(1)}
+  40%{transform:scale(1.015)}
+  100%{transform:scale(1)}
+}
+.result-confetti{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:18px
+}
+.result-confetti i{
+  position:absolute;width:6px;height:6px;border-radius:1px;opacity:0;
+  animation:confettiFall 1.1s ease-out forwards
+}
+@keyframes confettiFall{
+  0%{opacity:1;transform:translateY(0) rotate(0)}
+  100%{opacity:0;transform:translateY(120px) rotate(220deg)}
+}
 
 /* compare */
 .compare-panel[hidden]{display:none !important}
@@ -524,6 +590,13 @@ footer a:hover{text-decoration:underline}
         <button type="button" class="goal-pill" data-goal="study">یادگیری / دانشگاه</button>
       </div>
     </div>
+    <div class="install-banner" id="installBanner" hidden>
+      <span id="installText">نصب DevCompass روی گوشی</span>
+      <div class="install-actions">
+        <button type="button" id="btnInstall" class="install-yes">نصب</button>
+        <button type="button" id="btnInstallNo" class="install-no">بعداً</button>
+      </div>
+    </div>
     <button class="btn btn-primary" id="btnStart" type="button">شروع کوییز ←</button>
     <div class="btn-row">
       <button class="btn btn-ghost" id="btnLastResult" type="button" hidden>آخرین نتیجهٔ من</button>
@@ -637,6 +710,7 @@ footer a:hover{text-decoration:underline}
     </div>
 
     <div class="share-card" id="shareCard">
+      <div class="result-confetti" id="resultConfetti" aria-hidden="true"></div>
       <div class="sc-brand">DEVCOMPASS · دِو‌کمپس</div>
       <div class="sc-emoji" id="scEmoji">⚛️</div>
       <div class="sc-title" id="scTitle">Frontend Engineer</div>
@@ -696,6 +770,7 @@ const HIST_KEY = "devcompass.hist.v1";
 const THEME_KEY = "devcompass.theme";
 const PROG_KEY = "devcompass.prog.v1";
 const GROUP_KEY = "devcompass.group.v1";
+const STATS_KEY = "devcompass.stats.v1";
 
 /* ---------- i18n ---------- */
 const I18N = {
@@ -747,6 +822,8 @@ const I18N = {
     groupAdd:"ثبت",
     groupEmpty:"هنوز کسی ثبت نکرده — اولین نفر باش!",
     groupMe:"تو",
+    installCta:"نصب DevCompass روی گوشی",
+    installDismiss:"بعداً",
     shareTag:"تو هم بزن: DevCompass ↗",
     quizTitle:"کوییز مسیر یادگیری",
   },
@@ -798,6 +875,8 @@ const I18N = {
     groupAdd:"Add",
     groupEmpty:"No entries yet — be the first!",
     groupMe:"You",
+    installCta:"Install DevCompass on your phone",
+    installDismiss:"Later",
     shareTag:"Try it: DevCompass ↗",
     quizTitle:"Learning path quiz",
   }
@@ -1119,6 +1198,53 @@ function resultDeepLink(topKey, answersArr){
   const a = (answersArr || answers).filter(x => x != null);
   if(a.length !== QUESTIONS.length) return challengeUrl(topKey, answersArr);
   return shareUrl() + "?view=result&r=" + topKey + "&a=" + a.join(",");
+}
+
+function trackEvent(name){
+  // Privacy-friendly: local counters only, no network, no PII
+  try{
+    const raw = localStorage.getItem(STATS_KEY);
+    const s = raw ? JSON.parse(raw) : {};
+    s[name] = (s[name]||0)+1;
+    s.updatedAt = Date.now();
+    localStorage.setItem(STATS_KEY, JSON.stringify(s));
+  }catch(e){}
+}
+
+function countUpPct(el, target){
+  if(!el) return;
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){ el.textContent = lang==="fa" ? faNum(target)+"٪" : target+"%"; return; }
+  const start = performance.now();
+  const dur = 700;
+  const step = (now)=>{
+    const t = Math.min(1, (now-start)/dur);
+    const eased = 1-Math.pow(1-t,3);
+    const v = Math.round(target*eased);
+    el.textContent = lang==="fa" ? faNum(v)+"٪" : v+"%";
+    if(t<1) requestAnimationFrame(step);
+  };
+  el.textContent = lang==="fa" ? "۰٪" : "0%";
+  requestAnimationFrame(step);
+}
+
+function burstConfetti(){
+  const box = $("resultConfetti");
+  if(!box) return;
+  box.innerHTML = "";
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce) return;
+  const colors = ["#a78bfa","#34d399","#fbbf24","#f472b6","#60a5fa"];
+  for(let i=0;i<18;i++){
+    const p = document.createElement("i");
+    p.style.left = (10 + Math.random()*80) + "%";
+    p.style.top = (Math.random()*40) + "%";
+    p.style.background = colors[i%colors.length];
+    p.style.animationDelay = (Math.random()*0.25)+"s";
+    p.style.transform = `rotate(${Math.random()*180}deg)`;
+    box.appendChild(p);
+  }
+  setTimeout(()=>{ box.innerHTML=""; }, 1600);
 }
 
 function showResultFromAnswers(ans){
@@ -1520,11 +1646,16 @@ function renderResult(res){
   const st = STACKS[top.k];
   const t = I18N[lang];
 
-  $("badgeRing").style.setProperty("--pct", top.pct);
+  $("badgeRing").style.setProperty("--pct", 0);
+  requestAnimationFrame(()=>{
+    $("badgeRing").style.setProperty("--pct", top.pct);
+  });
+  $("badgeRing").classList.add("on");
   $("resEmoji").textContent = st.emoji;
-  $("resPctTop").textContent = lang==="fa" ? faNum(top.pct)+"٪" : top.pct+"%";
+  countUpPct($("resPctTop"), top.pct);
   $("resTitle").textContent = st.name[lang];
   $("resSub").textContent = st.sub[lang];
+  try{ burstConfetti(); }catch(e){}
 
   const chips = $("resChips");
   chips.innerHTML = "";
@@ -1620,6 +1751,7 @@ function renderResult(res){
   $("btnCopy").dataset.text = text;
   $("btnChallenge").dataset.url = shareUrlWithAnswers;
   $("btnResultLink").dataset.url = resultDeepLink(top.k, answers);
+  try{ trackEvent("result_shown"); }catch(e){}
 }
 
 /* ---------- PNG share card ---------- */
@@ -1864,6 +1996,7 @@ $("btnStart").addEventListener("click", ()=>{
   answers = new Array(QUESTIONS.length).fill(null);
   renderQuestion();
   show("quiz");
+  trackEvent("quiz_start");
 });
 $("btnBack").addEventListener("click", ()=>{
   if(qi>0){ qi--; renderQuestion(); }
@@ -1873,19 +2006,23 @@ $("btnRetry").addEventListener("click", ()=>{
   answers = new Array(QUESTIONS.length).fill(null);
   renderQuestion();
   show("quiz");
+  trackEvent("quiz_retry");
 });
 $("btnCopy").addEventListener("click", ()=>{
   copyText($("btnCopy").dataset.text || "", I18N[lang].copied);
+  trackEvent("copy_result");
 });
 $("btnChallenge").addEventListener("click", ()=>{
   const url = $("btnChallenge").dataset.url || shareUrl();
   copyText(url, I18N[lang].challengeCopied);
+  trackEvent("copy_challenge");
 });
-$("btnDownload").addEventListener("click", ()=>{ downloadCard(); });
-$("btnShare").addEventListener("click", ()=>{ nativeShareResult(); });
+$("btnDownload").addEventListener("click", ()=>{ downloadCard(); trackEvent("download_png"); });
+$("btnShare").addEventListener("click", ()=>{ nativeShareResult(); trackEvent("native_share"); });
 $("btnResultLink").addEventListener("click", ()=>{
   const url = $("btnResultLink").dataset.url || shareUrl();
   copyText(url, I18N[lang].resultLinkCopied);
+  trackEvent("copy_result_link");
 });
 $("btnGroupSave").addEventListener("click", ()=>{
   if(!lastResult) return;
@@ -2020,6 +2157,34 @@ function init(){
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(()=>{});
   }
+
+  // PWA install prompt (no backend, no tracking network)
+  let deferredInstall = null;
+  window.addEventListener("beforeinstallprompt", (e)=>{
+    e.preventDefault();
+    deferredInstall = e;
+    try{
+      if(localStorage.getItem("devcompass.install.dismissed")!=="1"){
+        $("installText").textContent = I18N[lang].installCta;
+        $("btnInstall").textContent = lang==="fa" ? "نصب" : "Install";
+        $("btnInstallNo").textContent = I18N[lang].installDismiss;
+        $("installBanner").hidden = false;
+      }
+    }catch(_){ $("installBanner").hidden = false; }
+  });
+  $("btnInstall").addEventListener("click", async ()=>{
+    $("installBanner").hidden = true;
+    if(deferredInstall){
+      deferredInstall.prompt();
+      try{ await deferredInstall.userChoice; }catch(e){}
+      deferredInstall = null;
+    }
+    trackEvent("pwa_install_click");
+  });
+  $("btnInstallNo").addEventListener("click", ()=>{
+    $("installBanner").hidden = true;
+    try{ localStorage.setItem("devcompass.install.dismissed","1"); }catch(e){}
+  });
 }
 
 init();

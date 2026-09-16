@@ -1,4 +1,4 @@
-const CACHE = "devcompass-v2";
+const CACHE = "devcompass-v3";
 const ASSETS = [
   "./",
   "./index.html",
