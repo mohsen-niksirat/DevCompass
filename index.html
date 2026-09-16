@@ -139,6 +139,8 @@ header.top{
   padding:6px 12px;border-radius:999px;font-weight:500
 }
 .pill b{color:var(--accent2);font-weight:700}
+.offline-pill{border-color:rgba(251,191,36,.4);color:var(--accent3)}
+.offline-pill[hidden]{display:none !important}
 
 /* buttons */
 .btn{
@@ -587,6 +589,7 @@ footer a:hover{text-decoration:underline}
         <span class="pill">⏱ <b id="pillTime">~۲ دقیقه</b></span>
         <span class="pill">🆓 <b id="pillFree">رایگان</b></span>
         <span class="pill">📤 <b id="pillShare">قابل اشتراک</b></span>
+        <span class="pill offline-pill" id="offlinePill" hidden>📴 آفلاین هم کار می‌کند</span>
       </div>
     </div>
     <div class="challenge-banner" id="challengeBanner">
@@ -2270,6 +2273,16 @@ function init(){
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(()=>{});
   }
+
+  // offline indicator
+  const updateOnline = ()=>{
+    const pill = $("offlinePill");
+    if(!pill) return;
+    pill.hidden = navigator.onLine !== false;
+  };
+  window.addEventListener("online", updateOnline);
+  window.addEventListener("offline", updateOnline);
+  updateOnline();
 
   // PWA install prompt (no backend, no tracking network)
   let deferredInstall = null;
