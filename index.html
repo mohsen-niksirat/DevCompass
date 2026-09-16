@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DevCompass">
 <title>دِو‌کمپس · DevCompass — چه استکی یاد بگیرم؟</title>
 <meta name="description" content="کوییز رایگان «چه استکی یاد بگیرم؟» — در ۲ دقیقه مسیر یادگیری برنامه‌نویسی‌ات را پیدا کن: فرانت‌اند، بک‌اند، هوش مصنوعی، موبایل و… / Free quiz: which tech stack should you learn?">
 <meta name="theme-color" content="#0b0714">
@@ -16,6 +20,7 @@
 <meta name="twitter:title" content="دِو‌کمپس · DevCompass">
 <meta name="twitter:description" content="چه استکی یاد بگیرم؟ کوییز رایگان ۲ دقیقه‌ای">
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🧭</text></svg>'>
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -54,7 +59,11 @@ body{
 .b2{width:360px;height:360px;background:#0ea5e9;bottom:10%;inset-inline-end:-100px;opacity:.3}
 .b3{width:280px;height:280px;background:#f472b6;top:40%;inset-inline-start:30%;opacity:.2}
 
-.wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:24px 18px 64px;overflow-x:clip}
+.wrap{
+  position:relative;z-index:1;max-width:640px;margin:0 auto;
+  padding:calc(18px + env(safe-area-inset-top,0px)) max(16px, env(safe-area-inset-right,0px)) calc(72px + env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-left,0px));
+  overflow-x:clip
+}
 
 /* header */
 header.top{
@@ -104,15 +113,16 @@ header.top{
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   font-family:var(--font);font-weight:700;font-size:.95rem;
-  padding:14px 28px;border-radius:14px;border:0;cursor:pointer;
+  padding:14px 28px;min-height:48px;border-radius:14px;border:0;cursor:pointer;
   text-decoration:none;transition:transform .15s ease,box-shadow .15s ease,background .15s;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none
 }
 .btn:active{transform:scale(.97)}
 .btn[hidden]{display:none !important}
 .btn-primary{
   background:linear-gradient(135deg,#8b5cf6,#6366f1);
   color:#fff;box-shadow:0 8px 28px rgba(139,92,246,.4);
-  width:100%;margin-top:28px;font-size:1.05rem;padding:16px 28px
+  width:100%;margin-top:28px;font-size:1.05rem;padding:16px 28px;min-height:54px
 }
 .btn-primary:hover{box-shadow:0 10px 36px rgba(139,92,246,.55)}
 .btn-ghost{
@@ -130,6 +140,11 @@ header.top{
 }
 .challenge-banner.on{display:block;animation:fade .4s ease}
 .challenge-banner strong{color:var(--accent2)}
+.challenge-cta{
+  margin-top:8px;font-size:.82rem;font-weight:700;color:#0b0714;
+  background:linear-gradient(90deg,#34d399,#6ee7b7);
+  display:inline-block;padding:6px 14px;border-radius:999px
+}
 
 /* progress */
 .progress-wrap{margin:8px 0 24px}
@@ -157,8 +172,9 @@ header.top{
   display:flex;align-items:flex-start;gap:12px;width:100%;text-align:start;
   background:rgba(255,255,255,.03);border:1.5px solid var(--border);
   border-radius:14px;padding:14px 16px;color:var(--ink);cursor:pointer;
-  font-family:var(--font);font-size:.95rem;line-height:1.55;
-  transition:border-color .15s,background .15s,transform .12s
+  font-family:var(--font);font-size:.95rem;line-height:1.55;min-height:56px;
+  transition:border-color .15s,background .15s,transform .12s;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent
 }
 .opt:hover{background:var(--card-hover);border-color:var(--accent)}
 .opt.selected{border-color:var(--accent);background:rgba(167,139,250,.12)}
@@ -174,15 +190,15 @@ header.top{
 /* result */
 .result-hero{text-align:center;padding:8px 0 4px}
 .badge-ring{
-  width:148px;height:148px;margin:0 auto 18px;border-radius:50%;
+  width:clamp(120px,38vw,148px);aspect-ratio:1;margin:0 auto 18px;border-radius:50%;
   display:grid;place-items:center;position:relative;
   background:
     radial-gradient(closest-side,var(--bg) 78%,transparent 79% 100%),
     conic-gradient(var(--accent) calc(var(--pct)*1%), rgba(255,255,255,.08) 0);
 }
-.badge-ring .inner{text-align:center}
-.badge-ring .emoji{font-size:2.4rem;line-height:1}
-.badge-ring .pct{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-top:2px}
+.badge-ring .inner{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.badge-ring .emoji{font-size:clamp(1.8rem,7vw,2.4rem);line-height:1.1}
+.badge-ring .pct{font-size:clamp(1.15rem,4.5vw,1.5rem);font-weight:800;letter-spacing:-.03em;margin-top:2px}
 .result-kicker{font-size:.8rem;color:var(--accent2);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .result-title{font-size:clamp(1.4rem,4.5vw,1.85rem);font-weight:800;margin:6px 0 4px;letter-spacing:-.02em}
 .result-sub{color:var(--muted);font-size:.95rem;max-width:440px;margin:0 auto}
@@ -245,13 +261,41 @@ header.top{
 
 /* toast */
 .toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(80px);
   background:#1a1230;color:var(--ink);border:1px solid var(--border);
   padding:12px 20px;border-radius:12px;font-size:.88rem;font-weight:600;
   box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:50;opacity:0;transition:all .3s ease;
-  pointer-events:none;max-width:90vw;text-align:center
+  pointer-events:none;max-width:min(92vw,420px);text-align:center
 }
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* mobile refinements */
+@media(max-width:480px){
+  .hero{padding-top:16px}
+  .hero .emoji{font-size:2.7rem}
+  .hero p{font-size:.95rem}
+  .q-card{padding:18px 14px;border-radius:16px}
+  .q-card h2{font-size:1.08rem;margin-bottom:14px}
+  .opt{padding:13px 12px;gap:10px;font-size:.92rem;border-radius:12px}
+  .opt .ico{font-size:1.15rem}
+  .panel{padding:16px 14px;border-radius:14px}
+  .roadmap li{padding:10px 12px;font-size:.86rem}
+  .share-card{padding:18px 14px}
+  .share-preview{display:none}
+  .btn-row.two{grid-template-columns:1fr}
+  .result-sub{font-size:.9rem;padding:0 4px}
+  .chip{font-size:.74rem;padding:6px 10px}
+  header.top{margin-bottom:18px}
+  footer{margin-top:32px}
+}
+@media(max-width:360px){
+  .wrap{padding-left:12px;padding-right:12px}
+  .lang-toggle button{padding:6px 9px;font-size:.72rem}
+  .brand strong{font-size:.95rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
 
 /* footer */
 footer{
@@ -263,6 +307,26 @@ footer a:hover{text-decoration:underline}
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DevCompass",
+  "alternateName": "دِو‌کمپس",
+  "url": "https://mohsen-niksirat.github.io/DevCompass/",
+  "description": "Free bilingual quiz that recommends which tech stack you should learn, with a shareable result card.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "inLanguage": ["fa", "en"],
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": {
+    "@type": "Person",
+    "name": "Mohsen Niksirat",
+    "url": "https://github.com/mohsen-niksirat"
+  }
+}
+</script>
 </head>
 <body>
 <div class="aurora" aria-hidden="true">
@@ -298,6 +362,7 @@ footer a:hover{text-decoration:underline}
     </div>
     <div class="challenge-banner" id="challengeBanner">
       <span id="challengeText"></span>
+      <div class="challenge-cta" id="challengeCta">همین حالا شروع کن</div>
     </div>
     <button class="btn btn-primary" id="btnStart" type="button">شروع کوییز ←</button>
     <div class="btn-row">
@@ -363,6 +428,9 @@ footer a:hover{text-decoration:underline}
       <button class="btn btn-primary" id="btnCopy" type="button" style="margin-top:0">📋 کپی نتیجه</button>
       <a class="btn btn-ghost" id="btnTelegram" href="#" target="_blank" rel="noopener">✈️ تلگرام</a>
     </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="btnShare" type="button" hidden style="margin-top:0">📤 اشتراک‌گذاری</button>
+    </div>
     <div class="btn-row two">
       <a class="btn btn-ghost" id="btnTwitter" href="#" target="_blank" rel="noopener">𝕏 ایکس</a>
       <button class="btn btn-ghost" id="btnChallenge" type="button">🎯 چالش دوست</button>
@@ -410,11 +478,14 @@ const I18N = {
     copy:"📋 کپی نتیجه", tg:"✈️ تلگرام", tw:"𝕏 ایکس",
     challenge:"🎯 چالش دوست", retry:"🔄 دوباره از اول",
     download:"⬇️ دانلود کارت PNG",
+    share:"📤 اشتراک‌گذاری",
     copied:"کپی شد! در تلگرام یا استوری بچسبان ✨",
     challengeCopied:"لینک چالش کپی شد — برای دوستت بفرست!",
     downloaded:"کارت ذخیره شد — در استوری بچسبان!",
+    shareFailed:"اشتراک لغو شد",
     foot:"ساختهٔ <a href=\"https://github.com/mohsen-niksirat\" target=\"_blank\" rel=\"noopener\">Mohsen Niksirat</a> · رایگان و متن‌باز",
     challengeOn:(t)=>`🎯 دوستت تو را به چالش دعوت کرده! نتیجهٔ او: <strong>${t}</strong> — ببین تو چی می‌شی.`,
+    challengeStart:"همین حالا شروع کن و نتیجه‌ات را بفرست",
     shareTag:"تو هم بزن: DevCompass ↗",
     quizTitle:"کوییز مسیر یادگیری",
   },
@@ -433,11 +504,14 @@ const I18N = {
     copy:"📋 Copy result", tg:"✈️ Telegram", tw:"𝕏 X",
     challenge:"🎯 Challenge a friend", retry:"🔄 Retake",
     download:"⬇️ Download PNG card",
+    share:"📤 Share",
     copied:"Copied! Paste it in Telegram or your story ✨",
     challengeCopied:"Challenge link copied — send it to a friend!",
     downloaded:"Card saved — share it in your story!",
+    shareFailed:"Share cancelled",
     foot:"Built by <a href=\"https://github.com/mohsen-niksirat\" target=\"_blank\" rel=\"noopener\">Mohsen Niksirat</a> · Free & open source",
     challengeOn:(t)=>`🎯 A friend challenged you! Their result: <strong>${t}</strong> — let's see yours.`,
+    challengeStart:"Start now and send them your result",
     shareTag:"Try it: DevCompass ↗",
     quizTitle:"Learning path quiz",
   }
@@ -780,6 +854,7 @@ function setLang(l){
   $("btnChallenge").textContent = t.challenge;
   $("btnRetry").textContent = t.retry;
   $("btnDownload").textContent = t.download;
+  $("btnShare").textContent = t.share;
   $("footNote").innerHTML = t.foot;
   document.title = l==="fa"
     ? "دِو‌کمپس · DevCompass — چه استکی یاد بگیرم؟"
@@ -806,6 +881,7 @@ function updateChallengeBanner(){
     banner.classList.add("on");
     const title = STACKS[r].name[lang];
     $("challengeText").innerHTML = I18N[lang].challengeOn(title);
+    $("challengeCta").textContent = I18N[lang].challengeStart;
   }else{
     banner.classList.remove("on");
   }
@@ -821,9 +897,9 @@ function renderQuestion(){
   $("qCounter").textContent = t.counter(qi+1, n).replace(/Question \d+ of \d+/, `Question ${qi+1} of ${n}`);
   // more accurate for fa/en:
   $("qCounter").textContent = lang==="fa" ? `سؤال ${iDisplay} از ${nDisplay}` : `Question ${qi+1} of ${n}`;
-  const p = Math.round(((qi)/n)*100);
+  const p = Math.round(((qi+1)/n)*100);
   $("qPct").textContent = lang==="fa" ? faNum(p)+"٪" : p+"%";
-  $("progressFill").style.width = ((qi)/n*100)+"%";
+  $("progressFill").style.width = p+"%";
   $("progressFill").parentElement.setAttribute("aria-valuenow", String(p));
   $("qText").textContent = cur.q[lang];
 
@@ -1088,6 +1164,99 @@ async function downloadCard(){
   },"image/png");
 }
 
+function canNativeShare(){
+  return typeof navigator !== "undefined" && typeof navigator.share === "function";
+}
+
+async function nativeShareResult(){
+  if(!lastResult) return;
+  const scores = lastResult.scores;
+  const list = toPct(ranked(scores));
+  const top = list[0];
+  const st = STACKS[top.k];
+  const text = shareText(scores);
+  const url = challengeUrl(top.k);
+
+  // Prefer sharing PNG card when supported
+  try{
+    const canvas = await buildCardCanvas(top, st);
+    const blob = await new Promise((res)=>canvas.toBlob(res,"image/png"));
+    if(blob){
+      const file = new File([blob], `devcompass-${top.k}.png`, { type:"image/png" });
+      if(navigator.canShare && navigator.canShare({ files:[file] })){
+        await navigator.share({ files:[file], title:"DevCompass", text: text.split("\n")[0] });
+        return;
+      }
+    }
+  }catch(err){
+    if(err && err.name === "AbortError") return;
+  }
+
+  try{
+    await navigator.share({ title:"DevCompass", text, url });
+  }catch(err){
+    if(err && err.name === "AbortError") return;
+    toast(I18N[lang].shareFailed);
+  }
+}
+
+/* rebuild canvas without download — extracted from downloadCard body */
+async function buildCardCanvas(top, st){
+  const W=1200,H=630;
+  const c=document.createElement("canvas");
+  c.width=W;c.height=H;
+  const ctx=c.getContext("2d");
+  const g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,"#1a0b2e");g.addColorStop(.5,"#0b0714");g.addColorStop(1,"#042f2e");
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  const blob=(x,y,r,col)=>{
+    const rg=ctx.createRadialGradient(x,y,0,x,y,r);
+    rg.addColorStop(0,col);rg.addColorStop(1,"transparent");
+    ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
+  };
+  blob(120,80,320,"rgba(124,58,237,.55)");
+  blob(1080,520,300,"rgba(14,165,233,.35)");
+  drawRoundedRect(ctx,70,70,1060,490,28);
+  ctx.fillStyle="rgba(18,13,31,.88)";ctx.fill();
+  ctx.strokeStyle="rgba(167,139,250,.4)";ctx.lineWidth=2;ctx.stroke();
+  const ox=160,oy=200,or_=66;
+  const og=ctx.createRadialGradient(ox-20,oy-20,8,ox,oy,or_);
+  og.addColorStop(0,"#c4b5fd");og.addColorStop(.55,"#7c3aed");og.addColorStop(1,"#4c1d95");
+  ctx.beginPath();ctx.arc(ox,oy,or_,0,Math.PI*2);ctx.fillStyle=og;ctx.fill();
+  ctx.textAlign="right";
+  ctx.direction = lang==="fa" ? "rtl" : "ltr";
+  ctx.fillStyle="#9b8fb8";
+  ctx.font="600 22px Vazirmatn,Tahoma,Segoe UI,sans-serif";
+  ctx.fillText("DEVCOMPASS · دِو‌کمپس", W-110, 150);
+  ctx.fillStyle="#f3eefc";
+  ctx.font="800 52px Vazirmatn,Tahoma,Segoe UI,sans-serif";
+  ctx.fillText(lang==="fa"?"چه استکی یاد بگیرم؟":"Which tech stack should you learn?", W-110, 220);
+  ctx.fillStyle="#9b8fb8";
+  ctx.font="500 24px Vazirmatn,Tahoma,Segoe UI,sans-serif";
+  const sub = lang==="fa" ? `نتیجهٔ من · ${st.emoji} ${st.name.fa}` : `My result · ${st.emoji} ${st.name.en}`;
+  ctx.fillText(sub, W-110, 275);
+  ctx.direction="ltr";ctx.textAlign="left";
+  drawRoundedRect(ctx,110,140,280,220,20);
+  ctx.fillStyle="rgba(0,0,0,.4)";ctx.fill();
+  ctx.strokeStyle="rgba(255,255,255,.12)";ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle="#9b8fb8";ctx.font="700 16px Segoe UI,Tahoma,sans-serif";
+  ctx.fillText("RESULT",140,180);
+  ctx.fillStyle="#f3eefc";ctx.font="700 24px Segoe UI,Tahoma,sans-serif";
+  ctx.fillText(`${st.emoji} ${st.title[lang]}`,140,220);
+  ctx.fillStyle="#a78bfa";ctx.font="800 48px Segoe UI,Tahoma,sans-serif";
+  ctx.fillText(lang==="fa"?faNum(top.pct)+"%":top.pct+"%",140,280);
+  drawRoundedRect(ctx,140,310,220,12,6);
+  ctx.fillStyle="rgba(255,255,255,.1)";ctx.fill();
+  const bg=ctx.createLinearGradient(140,0,360,0);
+  bg.addColorStop(0,"#8b5cf6");bg.addColorStop(1,"#34d399");
+  drawRoundedRect(ctx,140,310,220*(top.pct/100),12,6);
+  ctx.fillStyle=bg;ctx.fill();
+  ctx.direction="ltr";ctx.textAlign="left";
+  ctx.fillStyle="#34d399";ctx.font="600 22px Segoe UI,Tahoma,sans-serif";
+  ctx.fillText("mohsen-niksirat.github.io/DevCompass",110,520);
+  return c;
+}
+
 /* ---------- events ---------- */
 $("btnStart").addEventListener("click", ()=>{
   qi = 0;
@@ -1112,6 +1281,7 @@ $("btnChallenge").addEventListener("click", ()=>{
   copyText(url, I18N[lang].challengeCopied);
 });
 $("btnDownload").addEventListener("click", ()=>{ downloadCard(); });
+$("btnShare").addEventListener("click", ()=>{ nativeShareResult(); });
 $("btnFA").addEventListener("click", ()=>setLang("fa"));
 $("btnEN").addEventListener("click", ()=>setLang("en"));
 $("btnLastResult").addEventListener("click", ()=>{
@@ -1153,7 +1323,17 @@ function init(){
 
   updateChallengeBanner();
 
+  // native share sheet on mobile / supporting browsers
+  if(canNativeShare()){
+    $("btnShare").hidden = false;
+  }
+
   // deep-link result preview?r=stack — still start fresh but banner shows
+
+  // offline PWA
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  }
 }
 
 init();

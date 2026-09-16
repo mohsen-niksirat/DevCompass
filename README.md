@@ -33,8 +33,11 @@ Free quiz: which tech stack should you learn? Get a shareable result card.
 - موتور امتیازدهی وزنی روی پاسخ‌ها
 - نوار پیشرفت + کیبورد (کلیدهای ۱ تا ۴)
 - کپی یک‌کلیکی نتیجه، اشتراک تلگرام و ایکس
+- **اشتراک‌گذاری بومی موبایل** (Web Share API) + **دانلود کارت PNG**
 - لینک چالش (`?r=<stack>`) برای وایرال شدن بین دوستان
 - ذخیرهٔ آخرین نتیجه در `localStorage`
+- **PWA آفلاین** (manifest + service worker)
+- بهینه برای موبایل (touch targets، safe-area، RTL)
 - بدون وابستگی خارجی (جز فونت Vazirmatn از Google Fonts)
 
 ### 🚀 اجرا روی GitHub Pages
@@ -49,8 +52,12 @@ Free quiz: which tech stack should you learn? Get a shareable result card.
 
 ```
 DevCompass/
-├── index.html    # کل اپ (UI + منطق + محتوا)
+├── index.html           # کل اپ (UI + منطق + محتوا)
+├── manifest.webmanifest # PWA
+├── sw.js                # offline service worker
+├── assets/              # og.png + icons
 ├── .nojekyll
+├── LICENSE
 └── README.md
 ```
 
