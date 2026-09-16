@@ -595,8 +595,9 @@ footer a:hover{text-decoration:underline}
       <a class="btn btn-ghost" id="btnTwitter" href="#" target="_blank" rel="noopener">𝕏 ایکس</a>
       <button class="btn btn-ghost" id="btnChallenge" type="button">🎯 چالش دوست</button>
     </div>
-    <div class="btn-row">
+    <div class="btn-row two">
       <button class="btn btn-ghost" id="btnDownload" type="button">⬇️ دانلود کارت PNG</button>
+      <button class="btn btn-ghost" id="btnResultLink" type="button">🔗 لینک نتیجه</button>
     </div>
     <div class="btn-row">
       <button class="btn btn-ghost" id="btnRetry" type="button">🔄 دوباره از اول</button>
@@ -642,6 +643,8 @@ const I18N = {
     challenge:"🎯 چالش دوست", retry:"🔄 دوباره از اول",
     download:"⬇️ دانلود کارت PNG",
     share:"📤 اشتراک‌گذاری",
+    resultLink:"🔗 لینک نتیجه",
+    resultLinkCopied:"لینک نتیجه کپی شد — بدون کوییز باز می‌شود!",
     copied:"کپی شد! در تلگرام یا استوری بچسبان ✨",
     challengeCopied:"لینک چالش کپی شد — برای دوستت بفرست!",
     downloaded:"کارت ذخیره شد — در استوری بچسبان!",
@@ -681,6 +684,8 @@ const I18N = {
     challenge:"🎯 Challenge a friend", retry:"🔄 Retake",
     download:"⬇️ Download PNG card",
     share:"📤 Share",
+    resultLink:"🔗 Result link",
+    resultLinkCopied:"Result link copied — opens without the quiz!",
     copied:"Copied! Paste it in Telegram or your story ✨",
     challengeCopied:"Challenge link copied — send it to a friend!",
     downloaded:"Card saved — share it in your story!",
@@ -1018,6 +1023,25 @@ function challengeUrl(topKey, answersArr){
   return base;
 }
 
+function resultDeepLink(topKey, answersArr){
+  const a = (answersArr || answers).filter(x => x != null);
+  if(a.length !== QUESTIONS.length) return challengeUrl(topKey, answersArr);
+  return shareUrl() + "?view=result&r=" + topKey + "&a=" + a.join(",");
+}
+
+function showResultFromAnswers(ans){
+  const savedGoal = goal;
+  // reconstruct without assuming viewer's goal bonus matches sharer's
+  goal = "any";
+  const scores = score(ans);
+  goal = savedGoal;
+  lastResult = { scores, at: Date.now(), shared: true };
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(lastResult)); }catch(e){}
+  renderResult(lastResult);
+  show("result");
+  return true;
+}
+
 function parseFriendAnswers(){
   const a = new URLSearchParams(location.search).get("a");
   if(!a) return null;
@@ -1096,6 +1120,7 @@ function setLang(l){
   $("btnRetry").textContent = t.retry;
   $("btnDownload").textContent = t.download;
   $("btnShare").textContent = t.share;
+  $("btnResultLink").textContent = t.resultLink;
   $("goalLabel").textContent = t.goalLabel;
   $("historyTitle").textContent = t.historyTitle;
   $("btnStacks").textContent = t.stacksBtn;
@@ -1414,6 +1439,7 @@ function renderResult(res){
   // stash for buttons
   $("btnCopy").dataset.text = text;
   $("btnChallenge").dataset.url = shareUrlWithAnswers;
+  $("btnResultLink").dataset.url = resultDeepLink(top.k, answers);
 }
 
 /* ---------- PNG share card ---------- */
@@ -1677,6 +1703,10 @@ $("btnChallenge").addEventListener("click", ()=>{
 });
 $("btnDownload").addEventListener("click", ()=>{ downloadCard(); });
 $("btnShare").addEventListener("click", ()=>{ nativeShareResult(); });
+$("btnResultLink").addEventListener("click", ()=>{
+  const url = $("btnResultLink").dataset.url || shareUrl();
+  copyText(url, I18N[lang].resultLinkCopied);
+});
 $("btnFA").addEventListener("click", ()=>setLang("fa"));
 $("btnEN").addEventListener("click", ()=>setLang("en"));
 $("goalPills").addEventListener("click", (e)=>{
@@ -1750,6 +1780,13 @@ function init(){
 
   renderHistory();
 
+  // deep result link ?view=result&a=...
+  const viewParam = params.get("view");
+  const ansFromUrl = parseFriendAnswers();
+  if(viewParam === "result" && ansFromUrl){
+    answers = ansFromUrl.slice();
+    try{ showResultFromAnswers(answers); }catch(e){}
+  }else {
   // resume in-progress quiz
   try{
     const rawProg = localStorage.getItem(PROG_KEY);
@@ -1766,6 +1803,7 @@ function init(){
       }
     }
   }catch(e){}
+  }
 
   // deep link ?s=stack → open stacks browser detail
   const sParam = params.get("s");
