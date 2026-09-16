@@ -622,6 +622,7 @@ const SITE = "https://mohsen-niksirat.github.io/DevCompass/";
 const STORE_KEY = "devcompass.v1";
 const HIST_KEY = "devcompass.hist.v1";
 const THEME_KEY = "devcompass.theme";
+const PROG_KEY = "devcompass.prog.v1";
 
 /* ---------- i18n ---------- */
 const I18N = {
@@ -1008,8 +1009,31 @@ function shareUrl(){
   return base.endsWith("/") ? base : base + "/";
 }
 
-function challengeUrl(topKey){
-  return shareUrl() + "?r=" + topKey;
+function challengeUrl(topKey, answersArr){
+  const base = shareUrl() + "?r=" + topKey;
+  const a = (answersArr || answers).filter(x => x != null);
+  if(a.length === QUESTIONS.length){
+    return base + "&a=" + a.join(",");
+  }
+  return base;
+}
+
+function parseFriendAnswers(){
+  const a = new URLSearchParams(location.search).get("a");
+  if(!a) return null;
+  const parts = a.split(",").map(x => parseInt(x, 10));
+  if(parts.length !== QUESTIONS.length || parts.some(n => Number.isNaN(n) || n < 0 || n > 3)) return null;
+  return parts;
+}
+
+function friendScoresFromUrl(){
+  const arr = parseFriendAnswers();
+  if(!arr) return null;
+  const saved = goal;
+  goal = "any"; // friend answers scored without our goal bonus
+  const s = score(arr);
+  goal = saved;
+  return s;
 }
 
 function shareText(scores){
@@ -1193,6 +1217,7 @@ function renderQuestion(){
 
 function selectOption(i){
   answers[qi] = i;
+  try{ localStorage.setItem(PROG_KEY, JSON.stringify({qi, answers, goal})); }catch(e){}
   // visual select
   [...$("qOptions").children].forEach((el,idx)=>{
     el.classList.toggle("selected", idx===i);
@@ -1204,6 +1229,7 @@ function selectOption(i){
       qi++;
       renderQuestion();
     }else{
+      try{ localStorage.removeItem(PROG_KEY); }catch(e){}
       finish();
     }
   }, 180);
@@ -1318,11 +1344,19 @@ function renderResult(res){
     $("compareYouEmoji").textContent = st.emoji;
     $("compareYouName").textContent = st.name[lang];
     $("compareYouPct").textContent = lang==="fa" ? faNum(top.pct)+"٪" : top.pct+"%";
-    const fst = STACKS[friendKey];
+    const friendScores = friendScoresFromUrl();
+    let friendPct = 100;
+    let friendShowKey = friendKey;
+    if(friendScores){
+      const flist = toPct(ranked(friendScores));
+      friendPct = flist[0].pct;
+      friendShowKey = flist[0].k;
+    }
+    const fst = STACKS[friendShowKey] || STACKS[friendKey];
     $("compareFriendEmoji").textContent = fst.emoji;
     $("compareFriendName").textContent = fst.name[lang];
-    $("compareFriendPct").textContent = "100%";
-    const isMatch = friendKey === top.k;
+    $("compareFriendPct").textContent = lang==="fa" ? faNum(friendPct)+"٪" : friendPct+"%";
+    const isMatch = friendShowKey === top.k || friendKey === top.k;
     $("compareYou").classList.toggle("match", isMatch);
     $("compareFriend").classList.toggle("match", isMatch);
     $("compareVerdict").className = "compare-verdict " + (isMatch ? "match" : "diff");
@@ -1369,16 +1403,17 @@ function renderResult(res){
   const text = shareText(scores);
   $("sharePreview").textContent = text;
 
+  const shareUrlWithAnswers = challengeUrl(top.k, answers);
   const tgText = encodeURIComponent(text);
-  $("btnTelegram").href = "https://t.me/share/url?url="+encodeURIComponent(challengeUrl(top.k))+"&text="+tgText;
+  $("btnTelegram").href = "https://t.me/share/url?url="+encodeURIComponent(shareUrlWithAnswers)+"&text="+tgText;
   const twText = lang==="fa"
     ? `من ${st.emoji} ${st.title.fa} شدم (${top.pct}٪)!\nچه استکی توئه؟\n`
     : `I got ${st.emoji} ${st.title.en} (${top.pct}%)!\nWhat's your stack?\n`;
-  $("btnTwitter").href = "https://twitter.com/intent/tweet?text="+encodeURIComponent(twText)+"&url="+encodeURIComponent(challengeUrl(top.k));
+  $("btnTwitter").href = "https://twitter.com/intent/tweet?text="+encodeURIComponent(twText)+"&url="+encodeURIComponent(shareUrlWithAnswers);
 
   // stash for buttons
   $("btnCopy").dataset.text = text;
-  $("btnChallenge").dataset.url = challengeUrl(top.k);
+  $("btnChallenge").dataset.url = shareUrlWithAnswers;
 }
 
 /* ---------- PNG share card ---------- */
@@ -1535,7 +1570,7 @@ async function nativeShareResult(){
   const top = list[0];
   const st = STACKS[top.k];
   const text = shareText(scores);
-  const url = challengeUrl(top.k);
+  const url = challengeUrl(top.k, answers);
 
   // Prefer sharing PNG card when supported
   try{
@@ -1714,6 +1749,23 @@ function init(){
   }catch(e){}
 
   renderHistory();
+
+  // resume in-progress quiz
+  try{
+    const rawProg = localStorage.getItem(PROG_KEY);
+    if(rawProg){
+      const prog = JSON.parse(rawProg);
+      if(prog && Array.isArray(prog.answers) && prog.answers.length === QUESTIONS.length && typeof prog.qi === "number"){
+        if(prog.qi > 0 && prog.qi < QUESTIONS.length){
+          answers = prog.answers.slice();
+          if(prog.goal) goal = prog.goal;
+          qi = prog.qi;
+          renderQuestion();
+          show("quiz");
+        }
+      }
+    }
+  }catch(e){}
 
   // deep link ?s=stack → open stacks browser detail
   const sParam = params.get("s");
