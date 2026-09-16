@@ -277,7 +277,25 @@ header.top{
 .compare-verdict.match{color:var(--accent2)}
 .compare-verdict.diff{color:var(--accent3)}
 
-/* history */
+/* stacks UI */
+.stack-card{
+  display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px;cursor:pointer;text-align:start;font-family:var(--font);
+  color:var(--ink);min-height:88px;touch-action:manipulation
+}
+.stack-card:hover{border-color:var(--accent);background:var(--card-hover)}
+.stack-card .sc-em{font-size:1.4rem}
+.stack-card .sc-nm{font-weight:700;font-size:.9rem;line-height:1.35}
+.stack-card .sc-ln{font-size:.72rem;color:var(--muted);direction:ltr;text-align:start}
+.stack-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+@media(min-width:520px){.stack-grid{grid-template-columns:repeat(2,1fr)}}
+.stacks-head{margin-bottom:14px}
+.stacks-head h2{font-size:1.25rem;font-weight:800;letter-spacing:-.02em}
+.stacks-head p{color:var(--muted);font-size:.9rem;margin-top:6px}
+.stack-detail[hidden]{display:none !important}
+.sd-line{font-family:var(--mono);font-size:.8rem;color:var(--accent2);direction:ltr;text-align:start;margin:-4px 0 10px}
+.sd-sub{color:var(--muted);font-size:.92rem;line-height:1.65;margin-bottom:12px}
 .history-panel[hidden]{display:none !important}
 .history-list{list-style:none;display:grid;gap:8px}
 .history-list li{
@@ -465,10 +483,30 @@ footer a:hover{text-decoration:underline}
     <button class="btn btn-primary" id="btnStart" type="button">شروع کوییز ←</button>
     <div class="btn-row">
       <button class="btn btn-ghost" id="btnLastResult" type="button" hidden>آخرین نتیجهٔ من</button>
+      <button class="btn btn-ghost" id="btnStacks" type="button">🧭 مسیرهای یادگیری</button>
     </div>
     <div class="panel history-panel" id="historyPanel" hidden>
       <h3><span class="dot" style="background:var(--accent2)"></span><span id="historyTitle">تاریخچهٔ نتایج</span></h3>
       <ul class="history-list" id="historyList"></ul>
+    </div>
+  </section>
+
+  <!-- STACKS -->
+  <section class="screen" id="screen-stacks">
+    <div class="stacks-head">
+      <h2 id="stacksTitle">مسیرهای یادگیری</h2>
+      <p id="stacksSub">هر مسیر را ببین؛ بعد کوییز بده تا بهترین‌اش را پیشنهاد کنیم.</p>
+    </div>
+    <div class="stack-grid" id="stackGrid"></div>
+    <div class="panel stack-detail" id="stackDetail" hidden>
+      <h3><span class="dot"></span><span id="sdTitle"></span></h3>
+      <p class="sd-line" id="sdLine"></p>
+      <p class="sd-sub" id="sdSub"></p>
+      <ol class="roadmap" id="sdRoadmap"></ol>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnStackQuiz" type="button" style="margin-top:8px">شروع کوییز ←</button>
+        <button class="btn btn-ghost" id="btnStackBack" type="button">← همهٔ مسیرها</button>
+      </div>
     </div>
   </section>
 
@@ -618,6 +656,11 @@ const I18N = {
     goalLabel:"هدف تو چیست؟ (اختیاری)",
     goals:{any:"نامشخص",job:" استخدام / شغل ",freelance:"فریلنسری",fun:"سرگرمی / پروژه شخصی",study:"یادگیری / دانشگاه"},
     historyTitle:"تاریخچهٔ نتایج",
+    stacksBtn:"🧭 مسیرهای یادگیری",
+    stacksTitle:"مسیرهای یادگیری",
+    stacksSub:"هر مسیر را ببین؛ بعد کوییز بده تا بهترین‌اش را پیشنهاد کنیم.",
+    stacksBack:"← همهٔ مسیرها",
+    stacksStart:"شروع کوییز ←",
     shareTag:"تو هم بزن: DevCompass ↗",
     quizTitle:"کوییز مسیر یادگیری",
   },
@@ -652,6 +695,11 @@ const I18N = {
     goalLabel:"What's your goal? (optional)",
     goals:{any:"Not sure",job:"Job / career",freelance:"Freelance",fun:"Fun / side project",study:"Learning / school"},
     historyTitle:"Result history",
+    stacksBtn:"🧭 Learning paths",
+    stacksTitle:"Learning paths",
+    stacksSub:"Browse each path, then take the quiz to get your best match.",
+    stacksBack:"← All paths",
+    stacksStart:"Start the quiz →",
     shareTag:"Try it: DevCompass ↗",
     quizTitle:"Learning path quiz",
   }
@@ -1026,6 +1074,11 @@ function setLang(l){
   $("btnShare").textContent = t.share;
   $("goalLabel").textContent = t.goalLabel;
   $("historyTitle").textContent = t.historyTitle;
+  $("btnStacks").textContent = t.stacksBtn;
+  $("stacksTitle").textContent = t.stacksTitle;
+  $("stacksSub").textContent = t.stacksSub;
+  $("btnStackBack").textContent = t.stacksBack;
+  $("btnStackQuiz").textContent = t.stacksStart;
   document.querySelectorAll(".goal-pill").forEach(btn=>{
     const g = btn.dataset.goal;
     if(t.goals && t.goals[g]) btn.textContent = t.goals[g];
@@ -1040,12 +1093,51 @@ function setLang(l){
   // challenge banner language
   updateChallengeBanner();
   renderHistory();
+  if($("screen-stacks").classList.contains("on")) renderStackGrid();
 }
 
 function show(name){
-  ["welcome","quiz","result"].forEach(s=>{
+  ["welcome","quiz","result","stacks"].forEach(s=>{
     $("screen-"+s).classList.toggle("on", s===name);
   });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- stacks browser ---------- */
+function renderStackGrid(){
+  const grid = $("stackGrid");
+  grid.innerHTML = "";
+  Object.keys(STACKS).forEach(k=>{
+    const st = STACKS[k];
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "stack-card";
+    b.innerHTML = `<span class="sc-em">${st.emoji}</span><span class="sc-nm">${st.name[lang]}</span><span class="sc-ln">${st.line}</span>`;
+    b.addEventListener("click", ()=>openStack(k));
+    grid.appendChild(b);
+  });
+}
+
+function openStack(key){
+  const st = STACKS[key];
+  if(!st) return;
+  $("stackDetail").hidden = false;
+  $("sdTitle").textContent = st.name[lang];
+  $("sdLine").textContent = st.line;
+  $("sdSub").textContent = st.sub[lang];
+  const ol = $("sdRoadmap");
+  ol.innerHTML = "";
+  st.roadmap[lang].forEach((step,i)=>{
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="step">${i+1}</span><span>${step}</span>`;
+    ol.appendChild(li);
+  });
+  $("btnStackQuiz").dataset.stack = key;
+  $("stackDetail").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function closeStackDetail(){
+  $("stackDetail").hidden = true;
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
@@ -1561,6 +1653,25 @@ $("goalPills").addEventListener("click", (e)=>{
 $("btnLastResult").addEventListener("click", ()=>{
   if(lastResult){ renderResult(lastResult); show("result"); }
 });
+$("btnStacks").addEventListener("click", ()=>{
+  renderStackGrid();
+  closeStackDetail();
+  show("stacks");
+});
+$("btnStackBack").addEventListener("click", ()=>{
+  closeStackDetail();
+});
+$("btnStackQuiz").addEventListener("click", ()=>{
+  qi = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  renderQuestion();
+  show("quiz");
+});
+$("brandLink").addEventListener("click", (e)=>{
+  // stay on SPA home
+  e.preventDefault();
+  show("welcome");
+});
 
 // keyboard: 1-4 select option
 document.addEventListener("keydown", (e)=>{
@@ -1603,6 +1714,14 @@ function init(){
   }catch(e){}
 
   renderHistory();
+
+  // deep link ?s=stack → open stacks browser detail
+  const sParam = params.get("s");
+  if(sParam && STACKS[sParam]){
+    renderStackGrid();
+    show("stacks");
+    openStack(sParam);
+  }
 
   updateChallengeBanner();
 
