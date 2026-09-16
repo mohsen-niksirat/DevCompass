@@ -44,6 +44,7 @@ Free quiz: which tech stack should you learn? Get a shareable result card.
 - **انیمیشن نتیجه** + شمارندهٔ درصد + confetti (با احترام به reduced-motion)
 - **شمارش محلی رویدادها** (بدون سرور و بدون analytics شخص‌ثالث)
 - **بنر نصب PWA** وقتی مرورگر اجازه دهد
+- **نکات بازار ایران** برای هر مسیر شغلی (فریلنسری، استخدام، پورتفولیو)
 - لینک ابزارهای مرتبط (Wrapped / Promptopia / Readner)
 - ذخیرهٔ آخرین نتیجه در `localStorage`
 - **PWA آفلاین** (manifest + service worker)

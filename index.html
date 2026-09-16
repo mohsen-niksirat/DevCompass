@@ -318,6 +318,16 @@ header.top{
   100%{opacity:0;transform:translateY(120px) rotate(220deg)}
 }
 
+/* iran tips */
+.iran-panel[hidden]{display:none !important}
+.iran-list{list-style:none;display:grid;gap:8px}
+.iran-list li{
+  display:flex;gap:10px;align-items:flex-start;font-size:.9rem;line-height:1.55;
+  padding:10px 12px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.22);
+  border-radius:12px
+}
+.iran-list .ir-ico{flex-shrink:0;font-size:1.05rem}
+
 /* compare */
 .compare-panel[hidden]{display:none !important}
 .compare-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
@@ -679,6 +689,11 @@ footer a:hover{text-decoration:underline}
       <div class="stack-chips" id="resChips"></div>
     </div>
 
+    <div class="panel iran-panel" id="iranPanel" hidden>
+      <h3><span class="dot" style="background:var(--accent3)"></span><span id="iranTitle">نکات بازار ایران</span></h3>
+      <ul class="iran-list" id="iranList"></ul>
+    </div>
+
     <div class="panel compare-panel" id="comparePanel" hidden>
       <h3><span class="dot" style="background:var(--accent3)"></span><span id="compareTitle">مقایسه با دوست</span></h3>
       <div class="compare-grid">
@@ -824,6 +839,18 @@ const I18N = {
     groupMe:"تو",
     installCta:"نصب DevCompass روی گوشی",
     installDismiss:"بعداً",
+    iranTitle:"نکات بازار ایران",
+    iranTips:{
+      frontend:["پروژه‌های سازمانی و فروشگاهی زیاد است — پورتفولیوی فارسی+انگلیسی بساز.","فریلنسری در پونیشا و پارسکدرز واقعی است؛ نمونه‌کار محکم بزن.","مهارت Tailwind و Next برای استخدام تیم‌های استارتاپی تهران پرتقاضاست."],
+      backend:["بانک، فین‌تک و سیستم‌های پرداخت به Node/Python تقاضای بالا دارند.","یادگیری SQL عمیق + Docker برای موقعیت‌های سازمانی حیاتی است.","Remote با شرکت‌های خارجی برای بک‌اند واقع‌بینانه است اگر English خوب باشد."],
+      fullstack:["استارتاپ‌های ایرانی اغلب فل‌استک تمام‌عیار می‌خواهند.","یک محصول SaaS کوچک فارسی بساز — بهترین رزومه برای استخدام.","فریلنسری پروژه‌های واقعی (فروشگاه، رزرو، پنل) درآمد سریع دارد."],
+      mobile:["Flutter برای اندروید فارسی و بازار ایران انتخاب عاقلانه‌ای است.","انتشار در کافه‌بازار کنار Google Play ترافیک واقعی می‌دهد.","اپ‌های سفارشی برای کسب‌وکارهای کوچک مشتری خوب دارند."],
+      gamedev:["بازی‌های کوچک HTML5 برای ناشران و تبلیغات درآمد دارند.","مهارت Unity/C# برای استودیوهای داخلی و ریموت کاربرد دارد."," itch.io و شبکه‌های اجتماعی بهترین محل نمایش اولیه است."],
+      ai:["تیم‌های محصول به LLM/RAG عملی بیشتر از مقاله نیاز دارند.","پروژه‌های فارسی NLP (جست‌وجو، چت‌بات) کم‌رقابت و جذاب‌اند.","فریلنسری AI با نمونه‌کار واقعی، میانگین درآمد بالاتری دارد."],
+      data:["داشبورد فارسی برای مدیران فروش/مالی مشتری دارد.","SQL + Power BI/Metabase سریع‌ترین مسیر استخدام در شرکت‌های متوسط است.","تحلیل مارکتینگ و متریک‌های محصول برای استارتاپ‌ها پرتقاضاست."],
+      devops:["هوزینگ ایران (پارس‌پک و…) را عملی یاد بگیر، نه فقط AWS.","CI/CD و Docker برای تیم‌های نرم‌افزاری داخلی ارزش‌افزای فوری دارد.","Remote DevOps با انگلیسی خوب یکی از بهترین مسیرهای درآمد دلاری است."],
+      security:["اول CTF و آزمایشگاه، بعد سمت شغلی — عجله نکن.","امنیت وب (OWASP) برای مشاوره به استارتاپ‌ها کاربردی است.","گزارش‌های responsible disclosure و پورتفولیوی labs را جدی بگیر."]
+    },
     shareTag:"تو هم بزن: DevCompass ↗",
     quizTitle:"کوییز مسیر یادگیری",
   },
@@ -877,6 +904,18 @@ const I18N = {
     groupMe:"You",
     installCta:"Install DevCompass on your phone",
     installDismiss:"Later",
+    iranTitle:"Iran market tips",
+    iranTips:{
+      frontend:["Lots of org & shop projects — ship a bilingual portfolio.","Freelance on Ponisha-style boards is real; lead with samples.","Tailwind + Next.js is highly requested by Tehran startups."],
+      backend:["Banks, fintech and payments hire Node/Python heavily.","Deep SQL + Docker matters for enterprise roles.","Remote work abroad is realistic with strong English."],
+      fullstack:["Iranian startups often want full product owners.","Build a small Farsi SaaS — best hiring artifact.","Freelance shop/booking/panel projects pay quickly."],
+      mobile:["Flutter is a smart default for Android + Iran market.","Cafe Bazaar + Play Store dual listing brings real traffic.","Custom apps for small businesses are steady work."],
+      gamedev:["Small HTML5 games can monetize via ads/publishers.","Unity/C# skills open studio + remote roles.","Show early builds on itch.io and socials."],
+      ai:["Product teams need practical LLM/RAG, not papers.","Farsi NLP products are less crowded and useful.","Freelance AI with real demos pays better."],
+      data:["Farsi dashboards for sales/finance managers sell well.","SQL + Power BI/Metabase is a fast hire path.","Marketing & product analytics stay in demand."],
+      devops:["Learn local hosts (e.g. Iranian clouds) alongside AWS.","CI/CD + Docker adds instant team value.","Remote DevOps + English is a strong dollar-income path."],
+      security:["Start with CTFs and labs before job titles.","Web security (OWASP) fits startup consulting.","Keep responsible-disclosure + lab portfolio serious."]
+    },
     shareTag:"Try it: DevCompass ↗",
     quizTitle:"Learning path quiz",
   }
@@ -1351,6 +1390,7 @@ function setLang(l){
   $("groupHint").textContent = t.groupHint;
   $("btnGroupSave").textContent = t.groupSave;
   $("btnGroupClear").textContent = t.groupClear;
+  $("iranTitle").textContent = t.iranTitle;
   document.querySelectorAll(".goal-pill").forEach(btn=>{
     const g = btn.dataset.goal;
     if(t.goals && t.goals[g]) btn.textContent = t.goals[g];
@@ -1656,6 +1696,24 @@ function renderResult(res){
   $("resTitle").textContent = st.name[lang];
   $("resSub").textContent = st.sub[lang];
   try{ burstConfetti(); }catch(e){}
+
+  // Iran / market tips for top stack
+  try{
+    const tips = (t.iranTips && t.iranTips[top.k]) || [];
+    const iran = $("iranPanel");
+    if(tips.length){
+      iran.hidden = false;
+      const ul = $("iranList");
+      ul.innerHTML = "";
+      tips.forEach((tip)=>{
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="ir-ico" aria-hidden="true">🇮🇷</span><span>${tip}</span>`;
+        ul.appendChild(li);
+      });
+    }else{
+      iran.hidden = true;
+    }
+  }catch(e){ $("iranPanel").hidden = true; }
 
   const chips = $("resChips");
   chips.innerHTML = "";
